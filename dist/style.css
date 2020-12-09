@@ -1,0 +1,269 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Pacifico", Verdana, cursive;
+  font-size: 10px;
+}
+
+body {
+  font-size: 2rem;
+  background-color: #1a1919;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 4rem;
+  padding-left: 1.5rem;
+}
+
+h2 {
+  padding-bottom: 1rem;
+}
+
+h3 {
+  padding-bottom: 1rem;
+}
+
+.active_li {
+  box-shadow: 0 0 0.7rem #22b576;
+}
+
+.checkbox {
+  position: relative;
+  padding: 0.1rem;
+  border-radius: 0.4rem;
+  display: block;
+}
+.checkbox input {
+  position: absolute;
+  opacity: 0;
+}
+.checkbox input:checked + label:before {
+  background: #333;
+  color: #faec9b;
+}
+.checkbox input:checked + label:after {
+  background: #888;
+  color: #f7e477;
+  left: unset;
+}
+
+.period {
+  padding-bottom: 1rem;
+}
+.period label {
+  min-width: 30rem;
+  cursor: pointer;
+  display: block;
+}
+.period label:before {
+  content: "All period";
+  width: 45%;
+  text-align: center;
+  display: inline-block;
+  padding: 1rem 0.5rem;
+  transition: all 0.3s ease;
+  background: #888;
+  box-shadow: inset 0 0 0.6rem black;
+  left: 50%;
+  bottom: 0;
+  top: 0;
+  border-radius: 0.4rem;
+}
+.period label:after {
+  content: "Today";
+  width: 45%;
+  display: inline-block;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  box-shadow: inset 0 0 0.6rem black;
+  color: #faec9b;
+  bottom: 0;
+  top: 0;
+  border-radius: 0.4rem;
+}
+
+.population label {
+  min-width: 30rem;
+  cursor: pointer;
+  display: block;
+}
+.population label:before {
+  content: "All population";
+  min-width: 45%;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  display: inline-block;
+  transition: all 0.3s ease;
+  background: #888;
+  box-shadow: inset 0 0 0.6rem black;
+  left: 50%;
+  bottom: 0;
+  top: 0;
+  border-radius: 0.4rem;
+}
+.population label:after {
+  content: "Per 100 thou";
+  min-width: 45%;
+  text-align: center;
+  display: inline-block;
+  padding: 1rem 0.5rem;
+  color: #faec9b;
+  box-shadow: inset 0 0 0.6rem black;
+  bottom: 0;
+  top: 0;
+  border-radius: 0.4rem;
+}
+
+.header {
+  background: #333;
+  color: #f7e477;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title {
+  display: flex;
+}
+.title img {
+  width: 6rem;
+  height: 6rem;
+}
+
+.countries {
+  font-family: sans-serif;
+  padding: 1.5rem 5rem;
+  font-size: 2rem;
+}
+.countries::before {
+  content: "Select country";
+}
+.countries select {
+  font-size: 2rem;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 2rem;
+  margin: 1rem auto;
+  color: #f7e477;
+  font-family: sans-serif;
+}
+
+.list {
+  padding: 1rem;
+  margin: 1rem;
+  background-color: #333;
+  text-align: center;
+}
+.list__option {
+  display: flex;
+  justify-content: space-between;
+}
+.list__option .left {
+  transform: rotate(-45deg);
+  color: #d10d44;
+}
+.list__option .right {
+  transform: rotate(135deg);
+}
+.list__option i {
+  border: solid #d6c358;
+  border-width: 0 0.4rem 0.4rem 0;
+  display: inline-block;
+  padding: 0.3rem;
+  cursor: pointer;
+}
+.list__option i:hover {
+  border-color: #faec9b;
+}
+.list ul {
+  color: #fff;
+  font-family: sans-serif;
+}
+.list ul li {
+  list-style-type: none;
+  padding: 1rem 0.3rem;
+}
+.list ul li:hover {
+  cursor: pointer;
+  box-shadow: inset 0 0 0.4rem #22b576;
+}
+.list ul li:active {
+  box-shadow: inset 0 0 0.7rem #22b576;
+}
+.list ul li span {
+  padding-right: 1rem;
+}
+.list ul li .count {
+  font-size: 2.5rem;
+  color: #d10d44;
+}
+
+.dashboard .table {
+  display: flex;
+}
+
+.cases, .death, .recovery, .map, .graph {
+  margin: 1rem;
+  padding: 1rem 2rem;
+  background-color: #333;
+  text-align: center;
+}
+
+.options {
+  margin: 1rem;
+  padding: 0.5rem 0.5rem;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#cases_id, #deaths_id, #recovered_id {
+  font-size: 3.5rem;
+  color: #d10d44;
+  font-weight: bold;
+}
+#cases_id:hover, #deaths_id:hover, #recovered_id:hover {
+  transform: scale(1.2);
+  color: #8a082d;
+}
+
+.footer {
+  background: #333;
+  color: #f7e477;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2.5rem;
+}
+.footer__course a img {
+  width: 8rem;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+.info a {
+  color: #f7e477;
+}
+.info a:hover {
+  color: #d6c358;
+}
+.info img {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+/*# sourceMappingURL=style.css.map*/

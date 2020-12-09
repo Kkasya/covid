@@ -1,0 +1,77 @@
+/* eslint-disable */
+const  webpack = require('webpack');
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const plugins = require('./plugins');
+// const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = (env, options) => {
+    const isProduction = options.mode === 'production';
+    const config = {
+        mode: isProduction ? 'production' : 'development',
+        devtool: isProduction ? false : 'source-map',
+        watch: !isProduction,
+        entry: './src/index.js',
+        output: {
+            path: path.join(__dirname, '/dist'),
+            filename: 'script.js',
+        },
+
+        module: {
+            rules: [
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['@babel/preset-env']
+                        }
+                    }
+                 }, {
+                    test: /\.scss$/,
+                    use: [
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                            options: {
+                                publicPath: ''
+                            }
+                        },{
+                            loader: "css-loader"
+                        },{
+                            loader: "sass-loader"
+                        }
+                    ]
+                }, {
+                     test: /\.(png|svg|jpe?g|gif)$/,
+
+                     use: [
+                             'file-loader'
+                     ]
+                }
+            ]
+        },
+
+        plugins: [
+            new CleanWebpackPlugin(),
+            new MiniCssExtractPlugin( {
+                filename: 'style.css'
+            }),
+            new HtmlWebpackPlugin( {
+                template: 'index.html'
+            }),
+            plugins.ESLintPlugin,
+            // new CopyPlugin({
+            //     patterns:[
+            //         { from: './src/assets/sounds', to: 'src/assets/sounds' },
+            //         { from: path.resolve(__dirname,'./src/assets/images'), to: 'src/assets/images' },
+            //         { from: path.resolve(__dirname,'./src/assets/icons'), to: 'src/assets/icons' },
+            //     ],
+            // }),
+    ]
+    }
+    return config;
+}
+

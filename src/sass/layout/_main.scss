@@ -1,0 +1,95 @@
+.main {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 2rem;
+  margin: 1rem auto;
+  color: $color-main-darker;
+  font-family: $font-family-body;
+}
+
+.list {
+  padding: 1rem;
+  margin: 1rem;
+  background-color: $color-grey-dark;
+  text-align: center;
+
+ &__option {
+   display: flex;
+   justify-content: space-between;
+   .left {
+     transform: rotate(-45deg);
+     color: #d10d44;
+   }
+   .right {
+     transform: rotate(135deg);
+   }
+  i {
+    border: solid $color-main-dark;
+    border-width: 0 0.4rem 0.4rem 0;
+    display: inline-block;
+    padding: 0.3rem;
+    cursor: pointer;
+    &:hover {
+      border-color: $color-main-light;
+    }
+
+  }
+}
+  ul {
+    color: $color-main;
+    font-family: $font-family-body;
+
+    li {
+      list-style-type: none;
+      padding: 1rem 0.3rem;
+
+      &:hover {
+        cursor: pointer;
+        box-shadow: inset 0 0 0.4rem $color-green-extra-light;
+      }
+      &:active {
+        box-shadow: inset 0 0 0.7rem $color-green-extra-light;
+      }
+
+      span {
+        padding-right: 1rem;
+      }
+      .count {
+        font-size: $font-size-count;
+        color: $color-pink-dark;
+      }
+    }
+  }
+
+}
+
+.dashboard {
+  .table {
+    display: flex;
+  }
+}
+
+.cases, .death, .recovery, .map, .graph {
+  margin: 1rem;
+  padding: 1rem 2rem;
+  background-color: $color-grey-dark;
+  text-align: center;
+}
+
+.options {
+  margin: 1rem;
+  padding: 0.5rem 0.5rem;
+  background-color: $color-grey-dark;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#cases_id, #deaths_id, #recovered_id {
+  font-size: $font-size-number;
+  color: $color-pink-dark;
+  font-weight: bold;
+  &:hover {
+    transform: scale(1.2);
+    color: $color-pink-darker;
+  }
+}

@@ -1,0 +1,96 @@
+.checkbox {
+  position: relative;
+  padding: 0.1rem;
+  border-radius: 0.4rem;
+  display: block;
+
+  input {
+    position: absolute;
+    opacity: 0;
+
+    &:checked {
+      & + label:before {
+        background: $color-grey-dark;
+        color: $color-main-light;
+      }
+
+      & + label:after {
+        background: $color-grey;
+        color: $color-main-darker;
+        left: unset;
+      }
+    }
+  }
+}
+
+.period {
+  padding-bottom: 1rem;
+  label {
+    min-width: 30rem;
+    cursor: pointer;
+    display: block;
+    &:before {
+      content: 'All period';
+      width: 45%;
+      text-align: center;
+      display: inline-block;
+      padding: 1rem 0.5rem;
+      transition: all 0.3s ease;
+      background: $color-grey;
+      box-shadow: inset 0 0 0.6rem black;
+      left: 50%;
+      bottom: 0;
+      top: 0;
+      border-radius: 0.4rem;
+    }
+
+    &:after {
+      content: 'Today';
+      width: 45%;
+      display: inline-block;
+      text-align: center;
+      padding: 1rem 0.5rem;
+      box-shadow: inset 0 0 0.6rem black;
+      color: $color-main-light;
+      bottom: 0;
+      top: 0;
+      border-radius: 0.4rem;
+    }
+  }
+
+}
+
+.population {
+  label {
+    min-width: 30rem;
+    cursor: pointer;
+    display: block;
+    &:before {
+      content: 'All population';
+      min-width: 45%;
+      text-align: center;
+      padding: 1rem 0.5rem;
+      display: inline-block;
+      transition: all 0.3s ease;
+      background: $color-grey;
+      box-shadow: inset 0 0 0.6rem black;
+      left: 50%;
+      bottom: 0;
+      top: 0;
+      border-radius: 0.4rem;
+    }
+
+    &:after {
+      content: 'Per 100 thou';
+      min-width: 45%;
+      text-align: center;
+      display: inline-block;
+      padding: 1rem 0.5rem;
+      color: $color-main-light;
+      box-shadow: inset 0 0 0.6rem black;
+      bottom: 0;
+      top: 0;
+      border-radius: 0.4rem;
+    }
+  }
+}

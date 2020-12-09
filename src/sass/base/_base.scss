@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: $font-family-default;
+  font-size: $font-size-default;
+}
+
+body {
+  font-size: $font-size-body;
+  background-color: $color-grey-darker;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1 {
+  font-size: $font-size-h1;
+  padding-left: 1.5rem;
+}
+
+h2 {
+  padding-bottom: 1rem;
+}
+
+h3 {
+  padding-bottom: 1rem;
+}
+
+.active_li {
+  box-shadow: 0 0 0.7rem $color-green-extra-light;
+}

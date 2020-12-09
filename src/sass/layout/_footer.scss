@@ -1,0 +1,33 @@
+.footer {
+  background: $color-grey-dark;
+  color: $color-main-darker;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2.5rem;
+
+  &__course {
+    a {
+      img {
+        width: 8rem;
+      }
+    }
+  }
+}
+.info {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    color: $color-main-darker;
+    &:hover {
+    color: $color-main-dark;
+  }
+
+  }
+  img {
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
