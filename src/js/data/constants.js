@@ -12,12 +12,13 @@ const year = '2020';
 const cases = ['Total cases', 'Total deaths', 'Total recovered'];
 const listName = 'Sort by';
 
-const checkAll = 'All period';
-const checkToday = 'Today';
-const checkPopulation = 'All population';
-const check100 = 'Per 100 thou';
+const checkPeriod = 'period';
+const checkPopulation = 'population';
+
+const urlFlag = 'https://www.countryflags.io/';
+const sizeFlag = '/shiny/64.png';
 
 export {
  srcIconHeader, srcIconGitHub, srcIconRss, hrefGitHub, hrefRss, H1, nameAuthor, year,
- cases, listName, checkAll, checkToday, checkPopulation, check100,
+ cases, listName, checkPeriod, checkPopulation, urlFlag, sizeFlag,
 };
