@@ -6,7 +6,7 @@ export default class Checkbox {
     }
 
     init() {
-        const inputCkbx = create('input', '', null, null,
+        const inputCkbx = create('input', 'inputCkbx', null, null,
             ['type', 'checkbox'], ['id', `ckbx_${this.classCkbx}`], ['value', '0'], ['name', `ckbx_${this.classCkbx}`]);
         const labelCkbx = create('label', '', null, null, ['for', `ckbx_${this.classCkbx}`]);
         return create('div', `checkbox ${this.classCkbx}`, [inputCkbx, labelCkbx]);

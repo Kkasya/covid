@@ -36,7 +36,7 @@ class Checkbox {
   }
 
   init() {
-    var inputCkbx = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('input', '', null, null, ['type', 'checkbox'], ['id', "ckbx_".concat(this.classCkbx)], ['value', '0'], ['name', "ckbx_".concat(this.classCkbx)]);
+    var inputCkbx = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('input', 'inputCkbx', null, null, ['type', 'checkbox'], ['id', "ckbx_".concat(this.classCkbx)], ['value', '0'], ['name', "ckbx_".concat(this.classCkbx)]);
     var labelCkbx = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('label', '', null, null, ['for', "ckbx_".concat(this.classCkbx)]);
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', "checkbox ".concat(this.classCkbx), [inputCkbx, labelCkbx]);
   }
@@ -59,6 +59,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _table__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./table */ "./src/js/components/table.js");
 /* harmony import */ var _data_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/constants */ "./src/js/data/constants.js");
 /* harmony import */ var _checkbox__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./checkbox */ "./src/js/components/checkbox.js");
+/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./list */ "./src/js/components/list.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -67,9 +68,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
+
 class Dashboard {
+  constructor() {
+    this.countryForData = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+    this.period = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+    this.population = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+    this.dataAll = {};
+  }
+
   init() {
     this.dataCases = this.createDataCases();
+    this.setDataForAll();
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'dashboard', [this.dataCases]);
   }
 
@@ -81,29 +91,99 @@ class Dashboard {
     this.totalRecovered = new _table__WEBPACK_IMPORTED_MODULE_1__.default('recovery', _data_constants__WEBPACK_IMPORTED_MODULE_2__.cases[2]);
     var totalRecoveredHtml = this.totalRecovered.init();
     this.ckbxPeriod = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPeriod).init();
+    this.ckbxPeriod.addEventListener('click', e => this.choosePeriod(e));
     this.ckbxPopulation = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPopulation).init();
     this.checkbox = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'options', [this.ckbxPeriod, this.ckbxPopulation]);
-    this.changeData('All period', 'All population', 'All');
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'infoData', [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, this.checkbox]);
   }
 
-  changeData(period, population, country) {
+  defineOptions() {
+    var period = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.period;
+    var population = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.population;
+    var endUrl;
+    var dataOption = {};
+
+    if (this.countryForData === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
+      endUrl = null;
+    } else {
+      var idCountry = _list__WEBPACK_IMPORTED_MODULE_4__.default.getIdCountry(this.countryForData);
+      endUrl = "countries/".concat(idCountry);
+    }
+
+    if (period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
+      dataOption = this.dataAll.allPeriod;
+    } else {
+      dataOption = this.dataAll.today;
+    }
+
+    this.changeData(endUrl, dataOption);
+  }
+
+  setCountry(country) {
+    this.countryForData = country;
+    this.defineOptions();
+  }
+
+  changeData(endUrl, dataOption) {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      if (country === 'All') {
-        var url = 'https://disease.sh/v3/covid-19/all';
-        var res = yield fetch(url);
-        var data = yield res.json();
-        console.log(data);
+      if (endUrl) {
+        var data = Dashboard.getData(endUrl);
 
-        _this.totalCases.setData(data.cases);
+        _this.totalCases.setData(data[dataOption.cases]);
 
-        _this.totalDeath.setData(data.deaths);
+        _this.totalDeath.setData(data[dataOption.deaths]);
 
-        _this.totalRecovered.setData(data.recovered);
+        _this.totalRecovered.setData(data[dataOption.recovered]);
+      } else {
+        _this.totalCases.setData(dataOption.cases);
+
+        _this.totalDeath.setData(dataOption.deaths);
+
+        _this.totalRecovered.setData(dataOption.recovered);
       }
     })();
+  }
+
+  setDataForAll() {
+    var endUrl = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+    Dashboard.getData(endUrl).then(response => {
+      if (typeof response === 'object') {
+        this.dataAll.allPeriod = {
+          cases: response.cases,
+          deaths: response.deaths,
+          recovered: response.recovered
+        };
+        this.dataAll.today = {
+          cases: response.todayCases,
+          deaths: response.todayDeaths,
+          recovered: response.todayRecovered
+        };
+        this.population = response.population;
+        this.changeData(null, this.dataAll.allPeriod);
+      }
+    });
+  }
+
+  static getData(endUrl) {
+    return _asyncToGenerator(function* () {
+      var url = "".concat(_data_constants__WEBPACK_IMPORTED_MODULE_2__.urlCases).concat(endUrl);
+      var res = yield fetch(url);
+      var data = yield res.json();
+      console.log(data);
+      return data;
+    })();
+  }
+
+  choosePeriod(e) {
+    var isInputCheckbos = e.target.classList.contains('inputCkbx');
+
+    if (isInputCheckbos) {
+      var isPeriodForAll = this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+      this.period = isPeriodForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forToday : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+      this.defineOptions();
+    }
   }
 
 }
@@ -139,10 +219,14 @@ class List {
       var countryName = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', '', key);
       var urlFlag = "".concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.urlFlag).concat(value).concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.sizeFlag);
       var countryFlag = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('img', 'countryFlag', null, null, ['src', urlFlag]);
-      var country = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('li', '', [countryName, countryFlag]);
+      var country = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('li', 'countryLi', [countryName, countryFlag]);
       arrayListItems.push(country);
     });
     return arrayListItems;
+  }
+
+  static getIdCountry(name) {
+    return _data_listCountries__WEBPACK_IMPORTED_MODULE_2__.default[name];
   }
 
 }
@@ -299,7 +383,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "checkPeriod": () => /* binding */ checkPeriod,
 /* harmony export */   "checkPopulation": () => /* binding */ checkPopulation,
 /* harmony export */   "urlFlag": () => /* binding */ urlFlag,
-/* harmony export */   "sizeFlag": () => /* binding */ sizeFlag
+/* harmony export */   "sizeFlag": () => /* binding */ sizeFlag,
+/* harmony export */   "forAll": () => /* binding */ forAll,
+/* harmony export */   "urlCases": () => /* binding */ urlCases,
+/* harmony export */   "forToday": () => /* binding */ forToday
 /* harmony export */ });
 var srcIconHeader = 'https://img.icons8.com/color/48/000000/coronavirus--v2.png';
 var srcIconGitHub = 'https://image.flaticon.com/icons/png/512/25/25231.png';
@@ -313,8 +400,11 @@ var cases = ['Total cases', 'Total deaths', 'Total recovered'];
 var listName = 'Sort by';
 var checkPeriod = 'period';
 var checkPopulation = 'population';
+var forAll = 'all';
+var forToday = 'today';
 var urlFlag = 'https://www.countryflags.io/';
 var sizeFlag = '/shiny/64.png';
+var urlCases = 'https://disease.sh/v3/covid-19/';
 
 
 /***/ }),
@@ -331,14 +421,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var countries = {
   Afghanistan: 'AF',
-  'Aland Islands': 'AX',
   Albania: 'AL',
   ALGERIA: 'DZ',
-  'AMERICAN SAMOA': 'AS',
   ANDORRA: 'AD',
   ANGOLA: 'AO',
   ANGUILLA: 'AI',
-  ANTARCTICA: 'AQ',
   'ANTIGUA AND BARBUDA': 'AG',
   ARGENTINA: 'AR',
   ARMENIA: 'AM',
@@ -359,9 +446,7 @@ var countries = {
   BOLIVIA: 'BO',
   BOSNIA: 'BA',
   BOTSWANA: 'BW',
-  'BOUVET ISLAND': 'BV',
   BRAZIL: 'BR',
-  'BRITISH INDIAN OCEAN TERRITORY': 'IO',
   'BRUNEI DARUSSALAM': 'BN',
   BULGARIA: 'BG',
   'BURKINA FASO': 'BF',
@@ -375,12 +460,9 @@ var countries = {
   CHAD: 'TD',
   CHILE: 'CL',
   CHINA: 'CN',
-  'CHRISTMAS ISLAND': 'CX',
-  'COCOS ISLANDS': 'CC',
   COLOMBIA: 'CO',
   COMOROS: 'KM',
   CONGO: 'CD',
-  'COOK ISLANDS': 'CK',
   'COSTA RICA': 'CR',
   CROATIA: 'HR',
   CUBA: 'CU',
@@ -404,7 +486,6 @@ var countries = {
   FRANCE: 'FR',
   'FRENCH GUIANA': 'GF',
   'FRENCH POLYNESIA': 'PF',
-  'FRENCH SOUTHERN TERRITORIES': 'TF',
   GABON: 'GA',
   GAMBIA: 'GM',
   GEORGIA: 'GE',
@@ -415,9 +496,7 @@ var countries = {
   GREENLAND: 'GL',
   GRENADA: 'GD',
   GUADELOUPE: 'GP',
-  GUAM: 'GU',
   GUATEMALA: 'GT',
-  GUERNSEY: 'GG',
   GUINEA: 'GN',
   'GUINEA-BISSAU': 'GW',
   GUYANA: 'GY',
@@ -440,7 +519,6 @@ var countries = {
   JORDAN: 'JO',
   KAZAKHSTAN: 'KZ',
   KENYA: 'KE',
-  KIRIBATI: 'KI',
   KOREA: 'KR',
   KUWAIT: 'KW',
   KYRGYZSTAN: 'KG',
@@ -467,7 +545,6 @@ var countries = {
   MAURITIUS: 'MU',
   MAYOTTE: 'YT',
   MEXICO: 'MX',
-  MICRONESIA: 'FM',
   MOLDOVA: 'MD',
   MONACO: 'MC',
   MONGOLIA: 'MN',
@@ -477,7 +554,6 @@ var countries = {
   MOZAMBIQUE: 'MZ',
   MYANMAR: 'MM',
   NAMIBIA: 'NA',
-  NAURU: 'NR',
   NEPAL: 'NP',
   NETHERLANDS: 'NL',
   'NEW CALEDONIA': 'NC',
@@ -485,23 +561,17 @@ var countries = {
   NICARAGUA: 'NI',
   NIGER: 'NE',
   NIGERIA: 'NG',
-  NIUE: 'NU',
-  'NORFOLK ISLAND': 'NF',
-  'NORTHERN MARIANA ISLANDS': 'MP',
   NORWAY: 'NO',
   OMAN: 'OM',
   PAKISTAN: 'PK',
-  PALAU: 'PW',
   'PALESTINIAN TERRITORY': 'PS',
   PANAMA: 'PA',
   'PAPUA NEW GUINEA': 'PG',
   PARAGUAY: 'PY',
   PERU: 'PE',
   PHILIPPINES: 'PH',
-  PITCAIRN: 'PN',
   POLAND: 'PL',
   PORTUGAL: 'PT',
-  'PUERTO RICO': 'PR',
   QATAR: 'QA',
   ROMANIA: 'RO',
   'RUSSIAN FEDERATION': 'RU',
@@ -526,7 +596,6 @@ var countries = {
   'SRI LANKA': 'LK',
   SUDAN: 'SD',
   SURINAME: 'SR',
-  'SVALBARD AND JAN MAYEN': 'SJ',
   SWAZILAND: 'SZ',
   SWEDEN: 'SE',
   SWITZERLAND: 'CH',
@@ -537,13 +606,9 @@ var countries = {
   THAILAND: 'TH',
   'TIMOR-LESTE': 'TL',
   TOGO: 'TG',
-  TOKELAU: 'TK',
-  TONGA: 'TO',
   'TRINIDAD AND TOBAGO': 'TT',
   TUNISIA: 'TN',
   TURKEY: 'TR',
-  TURKMENISTAN: 'TM',
-  TUVALU: 'TV',
   UGANDA: 'UG',
   UKRAINE: 'UA',
   'UNITED ARAB EMIRATES': 'AE',
@@ -554,8 +619,6 @@ var countries = {
   VANUATU: 'VU',
   VENEZUELA: 'VE',
   'VIET NAM': 'VN',
-  'VIRGIN ISLANDS, BRITISH': 'VG',
-  'VIRGIN ISLANDS, US': 'VI',
   'WALLIS AND FUTUNA': 'WF',
   'WESTERN SAHARA': 'EH',
   YEMEN: 'YE',
@@ -682,8 +745,15 @@ __webpack_require__.r(__webpack_exports__);
 class Main {
   init() {
     this.searchList = new _components_search__WEBPACK_IMPORTED_MODULE_2__.default(_data_constants__WEBPACK_IMPORTED_MODULE_1__.cases[0]).init();
-    this.dashboard = new _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default().init();
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [this.searchList, this.dashboard]);
+    var dashboard = new _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default().init();
+    this.searchList.addEventListener('click', e => this.chooseCountry(e));
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [this.searchList, dashboard]);
+  }
+
+  chooseCountry(e) {
+    var isItemList = e.target.parentElement.classList.contains('countryLi');
+    var nameCountry = e.target.parentElement.children[0].innerText;
+    if (isItemList) this.dashboard.setCountry(nameCountry);
   }
 
 }

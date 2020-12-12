@@ -15,10 +15,14 @@ export default class List {
             const countryName = create('span', '', key);
             const urlFlag = `${constants.urlFlag}${value}${constants.sizeFlag}`;
             const countryFlag = create('img', 'countryFlag', null, null, ['src', urlFlag]);
-            const country = create('li', '', [countryName, countryFlag]);
+            const country = create('li', 'countryLi', [countryName, countryFlag]);
             arrayListItems.push(country);
         });
 
         return arrayListItems;
+    }
+
+    static getIdCountry(name) {
+        return countries[name];
     }
 }
