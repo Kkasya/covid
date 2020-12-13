@@ -14,7 +14,7 @@ body {
   background-color: #1a1919;
 }
 body *::-webkit-scrollbar {
-  color: blue;
+  width: 1rem;
 }
 body *::-webkit-scrollbar-track {
   background: #888;
@@ -134,7 +134,7 @@ h3 {
 
 .list__search {
   display: inline-block;
-  min-width: 20rem;
+  min-width: 22rem;
   white-space: nowrap;
   box-shadow: 0 0 0.7rem #22b576;
   background-color: #888;
@@ -146,6 +146,7 @@ h3 {
   margin: 1rem;
   background-color: #333;
   text-align: center;
+  min-width: 34rem;
   max-height: 100rem;
   overflow-y: scroll;
 }
@@ -177,6 +178,7 @@ h3 {
   display: flex;
   list-style-type: none;
   padding: 1rem 0.3rem;
+  font-size: 1.8rem;
 }
 .list ul li:hover {
   cursor: pointer;
@@ -187,6 +189,7 @@ h3 {
 }
 .list ul li span {
   padding-right: 1rem;
+  margin: auto 0;
 }
 .list ul li .count {
   font-size: 2.5rem;
@@ -241,6 +244,10 @@ h3 {
   padding: 1rem 2rem;
   background-color: #333;
   text-align: center;
+}
+
+.cases, .death, .recovery {
+  min-width: 22rem;
 }
 
 .options {

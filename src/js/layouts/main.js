@@ -5,17 +5,27 @@ import Dashboard from '../components/dashboard';
 
 export default class Main {
     init() {
-        this.searchList = new SearchList(constants.cases[0]).init();
-        const dashboard = new Dashboard().init();
+        this.searchList = new SearchList(constants.cases[0]);
+        const searchListHtml = this.searchList.init();
 
-        this.searchList.addEventListener('click', (e) => this.chooseCountry(e));
+        this.dashboard = new Dashboard();
+        const dashboardHtml = this.dashboard.init(this.searchList);
 
-        return create('div', 'main', [this.searchList, dashboard]);
+        searchListHtml.addEventListener('click', (e) => this.handle(e));
+
+        return create('div', 'main', [searchListHtml, dashboardHtml]);
     }
 
-    chooseCountry(e) {
+    handle(e) {
         const isItemList = e.target.parentElement.classList.contains('countryLi');
-        const nameCountry = e.target.parentElement.children[0].innerText;
-        if (isItemList) this.dashboard.setCountry(nameCountry);
+        const isArrow = e.target.classList.contains('arrow');
+
+        if (isItemList) {
+            const nameCountry = e.target.parentElement.children[1].innerText;
+            this.dashboard.setCountry(nameCountry);
+        } else if (isArrow) {
+           const option = this.searchList.chooseOption(e);
+           this.dashboard.setOption(option);
+        }
     }
 }

@@ -11,21 +11,19 @@ export default class SearchList {
         this.titleList = create('h2', '', constants.listName);
         this.listOption = this.createOption();
         this.searchCountry = SearchList.createSearchCountry();
-        this.list = new List().init();
+        this.list = new List(this.option).init();
         this.handle();
         return create('div', 'list', [this.titleList, this.listOption, this.searchCountry, this.list]);
     }
 
     handle() {
-        this.searchCountry.addEventListener('keypress', (e) => this.searchInList());
-        this.arrowRight.addEventListener('click', (e) => this.chooseOption(e));
-        this.arrowLeft.addEventListener('click', (e) => this.chooseOption(e));
+       // this.searchCountry.addEventListener('keypress', (e) => this.searchInList());
     }
 
     createOption() {
-        this.arrowRightI = create('i', 'right');
+        this.arrowRightI = create('i', 'arrow right');
         this.arrowRight = create('span', 'list__option__arrow', this.arrowRightI);
-        this.arrowLeftI = create('i', 'left');
+        this.arrowLeftI = create('i', 'arrow left');
         this.arrowLeft = create('span', 'list__option__arrow', this.arrowLeftI);
         this.optionName = create('h3', '', this.option);
 
@@ -45,6 +43,8 @@ export default class SearchList {
             this.option = cases[indLeft];
         }
         this.optionName.innerText = this.option;
+
+       return this.option;
     }
 
     static createSearchCountry() {

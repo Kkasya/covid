@@ -77,9 +77,11 @@ class Dashboard {
     this.dataAll = {};
   }
 
-  init() {
+  init(searchList) {
+    this.list = searchList.list;
+    this.optionList = searchList.option;
     this.dataCases = this.createDataCases();
-    this.setDataForAll();
+    this.defineOptions();
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'dashboard', [this.dataCases]);
   }
 
@@ -93,30 +95,33 @@ class Dashboard {
     this.ckbxPeriod = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPeriod).init();
     this.ckbxPeriod.addEventListener('click', e => this.choosePeriod(e));
     this.ckbxPopulation = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPopulation).init();
+    this.ckbxPopulation.addEventListener('click', e => this.choosePopulation(e));
     this.checkbox = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'options', [this.ckbxPeriod, this.ckbxPopulation]);
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'infoData', [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, this.checkbox]);
   }
 
   defineOptions() {
-    var period = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.period;
-    var population = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.population;
     var endUrl;
-    var dataOption = {};
 
     if (this.countryForData === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
-      endUrl = null;
+      endUrl = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+      this.setDataForList(this.optionList);
     } else {
       var idCountry = _list__WEBPACK_IMPORTED_MODULE_4__.default.getIdCountry(this.countryForData);
       endUrl = "countries/".concat(idCountry);
     }
 
-    if (period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
-      dataOption = this.dataAll.allPeriod;
-    } else {
-      dataOption = this.dataAll.today;
-    }
+    this.setData(endUrl);
+  }
 
-    this.changeData(endUrl, dataOption);
+  defineData() {
+    var dataOption = {};
+
+    if (this.population === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
+      if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) dataOption = this.dataAll.allPeriod;else dataOption = this.dataAll.today;
+    } else if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) dataOption = this.dataAll.allPeriodPerThou;else dataOption = this.dataAll.todayPerThou;
+
+    return dataOption;
   }
 
   setCountry(country) {
@@ -125,45 +130,64 @@ class Dashboard {
   }
 
   changeData(endUrl, dataOption) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      if (endUrl) {
-        var data = Dashboard.getData(endUrl);
-
-        _this.totalCases.setData(data[dataOption.cases]);
-
-        _this.totalDeath.setData(data[dataOption.deaths]);
-
-        _this.totalRecovered.setData(data[dataOption.recovered]);
-      } else {
-        _this.totalCases.setData(dataOption.cases);
-
-        _this.totalDeath.setData(dataOption.deaths);
-
-        _this.totalRecovered.setData(dataOption.recovered);
-      }
-    })();
+    this.totalCases.setData(dataOption.cases);
+    this.totalDeath.setData(dataOption.deaths);
+    this.totalRecovered.setData(dataOption.recovered);
   }
 
-  setDataForAll() {
-    var endUrl = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+  setData(endUrl, optionList, countCases) {
     Dashboard.getData(endUrl).then(response => {
-      if (typeof response === 'object') {
-        this.dataAll.allPeriod = {
-          cases: response.cases,
-          deaths: response.deaths,
-          recovered: response.recovered
-        };
-        this.dataAll.today = {
-          cases: response.todayCases,
-          deaths: response.todayDeaths,
-          recovered: response.todayRecovered
-        };
-        this.population = response.population;
-        this.changeData(null, this.dataAll.allPeriod);
-      }
+      var perThou = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forPer / response.population;
+      this.dataAll.allPeriod = {
+        cases: response.cases,
+        deaths: response.deaths,
+        recovered: response.recovered
+      };
+      this.dataAll.today = {
+        cases: response.todayCases,
+        deaths: response.todayDeaths,
+        recovered: response.todayRecovered
+      };
+      this.dataAll.allPeriodPerThou = {
+        cases: (response.cases * perThou).toFixed(),
+        deaths: (response.deaths * perThou).toFixed(),
+        recovered: (response.recovered * perThou).toFixed()
+      };
+      this.dataAll.todayPerThou = {
+        cases: (response.todayCases * perThou).toFixed(),
+        deaths: (response.todayDeaths * perThou).toFixed(),
+        recovered: (response.todayRecovered * perThou).toFixed()
+      };
+      var dataOption = this.defineData();
+
+      if (optionList) {
+        this.defineCountCases(optionList, dataOption, countCases);
+      } else this.changeData(endUrl, dataOption);
     });
+  }
+
+  setDataForList(optionList) {
+    var list = this.list.children;
+    Object.values(list).forEach(value => {
+      var countryForData = value.children[1].innerText;
+      var idCountry = _list__WEBPACK_IMPORTED_MODULE_4__.default.getIdCountry(countryForData);
+      var endUrl = "countries/".concat(idCountry);
+      var countCases = value.children[0];
+      this.setData(endUrl, optionList, countCases);
+    });
+    setTimeout(() => {
+      var sortedList = this.sortData();
+      var listUl = document.querySelector('.list');
+      listUl.removeChild(listUl.lastChild);
+      listUl.appendChild((0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('ul', '', sortedList));
+    }, 1100);
+  }
+
+  defineCountCases(optionList, dataOption, count) {
+    var countCases = count;
+    if (optionList === _data_constants__WEBPACK_IMPORTED_MODULE_2__.cases[0]) countCases.innerText = dataOption.cases;
+    if (optionList === _data_constants__WEBPACK_IMPORTED_MODULE_2__.cases[1]) countCases.innerText = dataOption.deaths;
+    if (optionList === _data_constants__WEBPACK_IMPORTED_MODULE_2__.cases[2]) countCases.innerText = dataOption.recovered;
   }
 
   static getData(endUrl) {
@@ -171,7 +195,6 @@ class Dashboard {
       var url = "".concat(_data_constants__WEBPACK_IMPORTED_MODULE_2__.urlCases).concat(endUrl);
       var res = yield fetch(url);
       var data = yield res.json();
-      console.log(data);
       return data;
     })();
   }
@@ -184,6 +207,33 @@ class Dashboard {
       this.period = isPeriodForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forToday : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
       this.defineOptions();
     }
+  }
+
+  choosePopulation(e) {
+    var isInputCheckbos = e.target.classList.contains('inputCkbx');
+
+    if (isInputCheckbos) {
+      var isPopulationForAll = this.population === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+      this.population = isPopulationForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forPer : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+      this.defineOptions();
+    }
+  }
+
+  setOption(option) {
+    this.optionList = option;
+    this.defineOptions();
+  }
+
+  sortData() {
+    function compareLi(a, b) {
+      var countA = Number(a.children[0].innerText);
+      var countB = Number(b.children[0].innerText);
+      if (countA > countB) return -1;
+      if (countA < countB) return 1;
+      return 0;
+    }
+
+    return Object.values(this.list.children).sort(compareLi);
   }
 
 }
@@ -207,6 +257,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class List {
+  constructor(option) {
+    this.option = option;
+  }
+
   init() {
     this.list = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('ul', '', List.createItemList());
     return this.list;
@@ -216,10 +270,11 @@ class List {
     var arrayListItems = [];
     Object.entries(_data_listCountries__WEBPACK_IMPORTED_MODULE_2__.default).forEach((_ref) => {
       var [key, value] = _ref;
+      var dataCases = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'count');
       var countryName = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', '', key);
       var urlFlag = "".concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.urlFlag).concat(value).concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.sizeFlag);
       var countryFlag = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('img', 'countryFlag', null, null, ['src', urlFlag]);
-      var country = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('li', 'countryLi', [countryName, countryFlag]);
+      var country = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('li', 'countryLi', [dataCases, countryName, countryFlag]);
       arrayListItems.push(country);
     });
     return arrayListItems;
@@ -258,21 +313,18 @@ class SearchList {
     this.titleList = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h2', '', _data_constants__WEBPACK_IMPORTED_MODULE_1__.listName);
     this.listOption = this.createOption();
     this.searchCountry = SearchList.createSearchCountry();
-    this.list = new _list__WEBPACK_IMPORTED_MODULE_2__.default().init();
+    this.list = new _list__WEBPACK_IMPORTED_MODULE_2__.default(this.option).init();
     this.handle();
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'list', [this.titleList, this.listOption, this.searchCountry, this.list]);
   }
 
-  handle() {
-    this.searchCountry.addEventListener('keypress', e => this.searchInList());
-    this.arrowRight.addEventListener('click', e => this.chooseOption(e));
-    this.arrowLeft.addEventListener('click', e => this.chooseOption(e));
+  handle() {// this.searchCountry.addEventListener('keypress', (e) => this.searchInList());
   }
 
   createOption() {
-    this.arrowRightI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'right');
+    this.arrowRightI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'arrow right');
     this.arrowRight = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'list__option__arrow', this.arrowRightI);
-    this.arrowLeftI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'left');
+    this.arrowLeftI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'arrow left');
     this.arrowLeft = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'list__option__arrow', this.arrowLeftI);
     this.optionName = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h3', '', this.option);
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'list__option', [this.arrowLeft, this.optionName, this.arrowRight]);
@@ -295,6 +347,7 @@ class SearchList {
     }
 
     this.optionName.innerText = this.option;
+    return this.option;
   }
 
   static createSearchCountry() {
@@ -386,7 +439,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "sizeFlag": () => /* binding */ sizeFlag,
 /* harmony export */   "forAll": () => /* binding */ forAll,
 /* harmony export */   "urlCases": () => /* binding */ urlCases,
-/* harmony export */   "forToday": () => /* binding */ forToday
+/* harmony export */   "forToday": () => /* binding */ forToday,
+/* harmony export */   "forPer": () => /* binding */ forPer
 /* harmony export */ });
 var srcIconHeader = 'https://img.icons8.com/color/48/000000/coronavirus--v2.png';
 var srcIconGitHub = 'https://image.flaticon.com/icons/png/512/25/25231.png';
@@ -402,6 +456,7 @@ var checkPeriod = 'period';
 var checkPopulation = 'population';
 var forAll = 'all';
 var forToday = 'today';
+var forPer = 100000;
 var urlFlag = 'https://www.countryflags.io/';
 var sizeFlag = '/shiny/64.png';
 var urlCases = 'https://disease.sh/v3/covid-19/';
@@ -422,208 +477,208 @@ __webpack_require__.r(__webpack_exports__);
 var countries = {
   Afghanistan: 'AF',
   Albania: 'AL',
-  ALGERIA: 'DZ',
-  ANDORRA: 'AD',
-  ANGOLA: 'AO',
-  ANGUILLA: 'AI',
-  'ANTIGUA AND BARBUDA': 'AG',
-  ARGENTINA: 'AR',
-  ARMENIA: 'AM',
-  ARUBA: 'AW',
-  AUSTRALIA: 'AU',
-  AUSTRIA: 'AT',
-  AZERBAIJAN: 'AZ',
-  BAHAMAS: 'BS',
-  BAHRAIN: 'BH',
-  BANGLADESH: 'BD',
-  BARBADOS: 'BB',
-  BELARUS: 'BY',
-  BELGIUM: 'BE',
-  BELIZE: 'BZ',
-  BENIN: 'BJ',
-  BERMUDA: 'BM',
-  BHUTAN: 'BT',
-  BOLIVIA: 'BO',
-  BOSNIA: 'BA',
-  BOTSWANA: 'BW',
-  BRAZIL: 'BR',
-  'BRUNEI DARUSSALAM': 'BN',
-  BULGARIA: 'BG',
-  'BURKINA FASO': 'BF',
-  BURUNDI: 'BI',
-  CAMBODIA: 'KH',
-  CAMEROON: 'CM',
-  CANADA: 'CA',
-  'CAPE VERDE': 'CV',
-  'CAYMAN ISLANDS': 'KY',
-  'CENTRAL AFRICAN REPUBLIC': 'CF',
-  CHAD: 'TD',
-  CHILE: 'CL',
-  CHINA: 'CN',
-  COLOMBIA: 'CO',
-  COMOROS: 'KM',
-  CONGO: 'CD',
-  'COSTA RICA': 'CR',
-  CROATIA: 'HR',
-  CUBA: 'CU',
-  CYPRUS: 'CY',
-  'CZECH REPUBLIC': 'CZ',
-  DENMARK: 'DK',
-  DJIBOUTI: 'DJ',
-  DOMINICA: 'DM',
-  'DOMINICAN REPUBLIC': 'DO',
-  ECUADOR: 'EC',
-  EGYPT: 'EG',
-  'EL SALVADOR': 'SV',
-  'EQUATORIAL GUINEA': 'GQ',
-  ERITREA: 'ER',
-  ESTONIA: 'EE',
-  ETHIOPIA: 'ET',
-  'FALKLAND ISLANDS (MALVINAS)': 'FK',
-  'FAROE ISLANDS': 'FO',
-  FIJI: 'FJ',
-  FINLAND: 'FI',
-  FRANCE: 'FR',
-  'FRENCH GUIANA': 'GF',
-  'FRENCH POLYNESIA': 'PF',
-  GABON: 'GA',
-  GAMBIA: 'GM',
-  GEORGIA: 'GE',
-  GERMANY: 'DE',
-  GHANA: 'GH',
-  GIBRALTAR: 'GI',
-  GREECE: 'GR',
-  GREENLAND: 'GL',
-  GRENADA: 'GD',
-  GUADELOUPE: 'GP',
-  GUATEMALA: 'GT',
-  GUINEA: 'GN',
-  'GUINEA-BISSAU': 'GW',
-  GUYANA: 'GY',
-  HAITI: 'HT',
-  HONDURAS: 'HN',
-  'HONG KONG': 'HK',
-  HUNGARY: 'HU',
-  ICELAND: 'IS',
-  INDIA: 'IN',
-  INDONESIA: 'ID',
-  IRAN: 'IR',
-  IRAQ: 'IQ',
-  IRELAND: 'IE',
-  'ISLE OF MAN': 'IM',
-  ISRAEL: 'IL',
-  ITALY: 'IT',
-  JAMAICA: 'JM',
-  JAPAN: 'JP',
-  JERSEY: 'JE',
-  JORDAN: 'JO',
-  KAZAKHSTAN: 'KZ',
-  KENYA: 'KE',
-  KOREA: 'KR',
-  KUWAIT: 'KW',
-  KYRGYZSTAN: 'KG',
-  LAO: 'LA',
-  LATVIA: 'LV',
-  LEBANON: 'LB',
-  LESOTHO: 'LS',
-  LIBERIA: 'LR',
-  'LIBYAN ARAB JAMAHIRIYA': 'LY',
-  LIECHTENSTEIN: 'LI',
-  LITHUANIA: 'LT',
-  LUXEMBOURG: 'LU',
-  MACAO: 'MO',
-  MACEDONIA: 'MK',
-  MADAGASCAR: 'MG',
-  MALAWI: 'MW',
-  MALAYSIA: 'MY',
-  MALDIVES: 'MV',
-  MALI: 'ML',
-  MALTA: 'MT',
-  'MARSHALL ISLANDS': 'MH',
-  MARTINIQUE: 'MQ',
-  MAURITANIA: 'MR',
-  MAURITIUS: 'MU',
-  MAYOTTE: 'YT',
-  MEXICO: 'MX',
-  MOLDOVA: 'MD',
-  MONACO: 'MC',
-  MONGOLIA: 'MN',
-  MONTENEGRO: 'ME',
-  MONTSERRAT: 'MS',
-  MOROCCO: 'MA',
-  MOZAMBIQUE: 'MZ',
-  MYANMAR: 'MM',
-  NAMIBIA: 'NA',
-  NEPAL: 'NP',
-  NETHERLANDS: 'NL',
-  'NEW CALEDONIA': 'NC',
-  'NEW ZEALAND': 'NZ',
-  NICARAGUA: 'NI',
-  NIGER: 'NE',
-  NIGERIA: 'NG',
-  NORWAY: 'NO',
-  OMAN: 'OM',
-  PAKISTAN: 'PK',
-  'PALESTINIAN TERRITORY': 'PS',
-  PANAMA: 'PA',
-  'PAPUA NEW GUINEA': 'PG',
-  PARAGUAY: 'PY',
-  PERU: 'PE',
-  PHILIPPINES: 'PH',
-  POLAND: 'PL',
-  PORTUGAL: 'PT',
-  QATAR: 'QA',
-  ROMANIA: 'RO',
-  'RUSSIAN FEDERATION': 'RU',
-  RWANDA: 'RW',
-  'SAINT LUCIA': 'LC',
-  'SAINT MARTIN': 'MF',
-  SAMOA: 'WS',
-  'SAN MARINO': 'SM',
-  'SAO TOME AND PRINCIPE': 'ST',
-  'SAUDI ARABIA': 'SA',
-  SENEGAL: 'SN',
-  SERBIA: 'RS',
-  SEYCHELLES: 'SC',
-  'SIERRA LEONE': 'SL',
-  SINGAPORE: 'SG',
-  SLOVAKIA: 'SK',
-  SLOVENIA: 'SI',
-  'SOLOMON ISLANDS': 'SB',
-  SOMALIA: 'SO',
-  'SOUTH AFRICA': 'ZA',
-  SPAIN: 'ES',
-  'SRI LANKA': 'LK',
-  SUDAN: 'SD',
-  SURINAME: 'SR',
-  SWAZILAND: 'SZ',
-  SWEDEN: 'SE',
-  SWITZERLAND: 'CH',
-  'SYRIAN ARAB REPUBLIC': 'SY',
-  TAIWAN: 'TW',
-  TAJIKISTAN: 'TJ',
-  TANZANIA: 'TZ',
-  THAILAND: 'TH',
-  'TIMOR-LESTE': 'TL',
-  TOGO: 'TG',
-  'TRINIDAD AND TOBAGO': 'TT',
-  TUNISIA: 'TN',
-  TURKEY: 'TR',
-  UGANDA: 'UG',
-  UKRAINE: 'UA',
-  'UNITED ARAB EMIRATES': 'AE',
-  'UNITED KINGDOM': 'GB',
-  'UNITED STATES': 'US',
-  URUGUAY: 'UY',
-  UZBEKISTAN: 'UZ',
-  VANUATU: 'VU',
-  VENEZUELA: 'VE',
-  'VIET NAM': 'VN',
-  'WALLIS AND FUTUNA': 'WF',
-  'WESTERN SAHARA': 'EH',
-  YEMEN: 'YE',
-  ZAMBIA: 'ZM',
-  ZIMBABWE: 'ZW'
+  Algeria: 'DZ',
+  Andorra: 'AD',
+  Angola: 'AO',
+  Anguilla: 'AI',
+  'Antigua and Barbuda': 'AG',
+  Argentina: 'AR',
+  Armenia: 'AM',
+  Aruba: 'AW',
+  Australia: 'AU',
+  Austria: 'AT',
+  Azerbaijan: 'AZ',
+  Bahamas: 'BS',
+  Bahrain: 'BH',
+  Bangladesh: 'BD',
+  Barbados: 'BB',
+  Belarus: 'BY',
+  Belgium: 'BE',
+  Belize: 'BZ',
+  Benin: 'BJ',
+  Bermuda: 'BM',
+  Bhutan: 'BT',
+  Bolivia: 'BO',
+  Bosnia: 'BA',
+  Botswana: 'BW',
+  Brazil: 'BR',
+  'Brunei Darussalam': 'BN',
+  Bulgaria: 'BG',
+  'Burkina Faso': 'BF',
+  Burundi: 'BI',
+  Cambodia: 'KH',
+  Cameroon: 'CM',
+  Canada: 'CA',
+  'Cape Verde': 'CV',
+  'Cayman Islands': 'KY',
+  'Central African Republic': 'CF',
+  Chad: 'td',
+  Chile: 'CL',
+  China: 'CN',
+  Colombia: 'CO',
+  Comoros: 'KM',
+  Congo: 'CD',
+  'Costa Rica': 'CR',
+  Croatia: 'HR',
+  Cuba: 'CU',
+  Cyprus: 'CY',
+  'Czech Republic': 'CZ',
+  Denmark: 'DK',
+  Djibouti: 'DJ',
+  Dominica: 'DM',
+  'Dominican Republic': 'DO',
+  Ecuador: 'EC',
+  Egypt: 'EG',
+  'EL Salvador': 'SV',
+  'Equatorial Guinea': 'GQ',
+  Eritrea: 'ER',
+  Estonia: 'EE',
+  Ethiopia: 'ET',
+  'Falkland Islands': 'FK',
+  'Faroe Islands': 'FO',
+  Fiji: 'FJ',
+  Finland: 'FI',
+  France: 'FR',
+  'French Guiana': 'GF',
+  'French Polynesia': 'PF',
+  Gabon: 'GA',
+  Gambia: 'GM',
+  Georgia: 'GE',
+  Germany: 'DE',
+  Ghana: 'GH',
+  Gibraltar: 'GI',
+  Greece: 'GR',
+  Greenland: 'GL',
+  Grenada: 'GD',
+  Guadeloupe: 'GP',
+  Guatemala: 'GT',
+  Guinea: 'GN',
+  'Guinea-Bissau': 'GW',
+  Guyana: 'GY',
+  Haiti: 'HT',
+  Honduras: 'HN',
+  'Hong Kong': 'HK',
+  Hungary: 'HU',
+  Iceland: 'IS',
+  India: 'IN',
+  Indonesia: 'ID',
+  Iran: 'IR',
+  Iraq: 'IQ',
+  Ireland: 'IE',
+  'Isle of Man': 'IM',
+  Israel: 'IL',
+  Italy: 'IT',
+  Jamaica: 'JM',
+  Japan: 'JP',
+  Jersey: 'JE',
+  Jordan: 'JO',
+  Kazakhstan: 'KZ',
+  Kenya: 'KE',
+  Korea: 'KR',
+  Kuwait: 'KW',
+  Kyrgyzstan: 'KG',
+  Lao: 'LA',
+  Latvia: 'LV',
+  Lebanon: 'LB',
+  Lesotho: 'LS',
+  Liberia: 'LR',
+  'Libyan Arab Jamahiriya': 'LY',
+  Liechtenstein: 'LI',
+  Lithuania: 'LT',
+  Luxembourg: 'LU',
+  Macao: 'MO',
+  Macedonia: 'MK',
+  Madagascar: 'MG',
+  Malawi: 'MW',
+  Malaysia: 'MY',
+  Maldives: 'MV',
+  Mali: 'ML',
+  Malta: 'MT',
+  'Marshall Islands': 'MH',
+  Martinique: 'MQ',
+  Mauritania: 'MR',
+  Mauritius: 'MU',
+  Mayotte: 'YT',
+  Mexico: 'MX',
+  Moldova: 'MD',
+  Monaco: 'MC',
+  Mongolia: 'MN',
+  Montenegro: 'ME',
+  Montserrat: 'MS',
+  Morocco: 'MA',
+  Mozambique: 'MZ',
+  Myanmar: 'MM',
+  Namibia: 'NA',
+  Nepal: 'NP',
+  Netherlands: 'NL',
+  'New Caledonia': 'NC',
+  'New Zealand': 'NZ',
+  Nicaragua: 'NI',
+  Niger: 'NE',
+  Nigeria: 'NG',
+  Norway: 'NO',
+  Oman: 'OM',
+  Pakistan: 'PK',
+  'Palestinian Territory': 'PS',
+  Panama: 'PA',
+  'Papua New Guinea': 'PG',
+  Paraguay: 'PY',
+  Peru: 'PE',
+  Philippines: 'PH',
+  Poland: 'PL',
+  Portugal: 'PT',
+  Qatar: 'QA',
+  Romania: 'RO',
+  'Russian Federation': 'RU',
+  Rwanda: 'RW',
+  'Saint Lucia': 'LC',
+  'Saint Martin': 'MF',
+  Samoa: 'WS',
+  'San marino': 'SM',
+  'Sao Tome and Principe': 'ST',
+  'Saudi Arabia': 'SA',
+  Senegal: 'SN',
+  Serbia: 'RS',
+  Seychelles: 'SC',
+  'Sierra Leone': 'SL',
+  Singapore: 'SG',
+  Slovakia: 'SK',
+  Slovenia: 'SI',
+  'Solomon Islands': 'SB',
+  Somalia: 'SO',
+  'South Africa': 'ZA',
+  Spain: 'ES',
+  'Sri LANKA': 'LK',
+  Sudan: 'SD',
+  Suriname: 'SR',
+  Swaziland: 'SZ',
+  Sweden: 'SE',
+  Switzerland: 'CH',
+  'Syrian Arab Republic': 'SY',
+  Taiwan: 'TW',
+  Tajikistan: 'TJ',
+  Tanzania: 'TZ',
+  Thailand: 'TH',
+  'Timor-Leste': 'TL',
+  Togo: 'TG',
+  'Trinidad and Tobago': 'TT',
+  Tunisia: 'TN',
+  Turkey: 'TR',
+  Uganda: 'UG',
+  Ukraine: 'UA',
+  'United Arab Emirates': 'AE',
+  'United Kingdom': 'GB',
+  'United States': 'US',
+  Uruguay: 'UY',
+  Uzbekistan: 'UZ',
+  Vanuatu: 'VU',
+  Venezuela: 'VE',
+  'Viet Nam': 'VN',
+  'Wallis and Futuna': 'WF',
+  'Western Sahara': 'EH',
+  Yemen: 'YE',
+  Zambia: 'ZM',
+  Zimbabwe: 'ZW'
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (countries);
 
@@ -744,16 +799,25 @@ __webpack_require__.r(__webpack_exports__);
 
 class Main {
   init() {
-    this.searchList = new _components_search__WEBPACK_IMPORTED_MODULE_2__.default(_data_constants__WEBPACK_IMPORTED_MODULE_1__.cases[0]).init();
-    var dashboard = new _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default().init();
-    this.searchList.addEventListener('click', e => this.chooseCountry(e));
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [this.searchList, dashboard]);
+    this.searchList = new _components_search__WEBPACK_IMPORTED_MODULE_2__.default(_data_constants__WEBPACK_IMPORTED_MODULE_1__.cases[0]);
+    var searchListHtml = this.searchList.init();
+    this.dashboard = new _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default();
+    var dashboardHtml = this.dashboard.init(this.searchList);
+    searchListHtml.addEventListener('click', e => this.handle(e));
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [searchListHtml, dashboardHtml]);
   }
 
-  chooseCountry(e) {
+  handle(e) {
     var isItemList = e.target.parentElement.classList.contains('countryLi');
-    var nameCountry = e.target.parentElement.children[0].innerText;
-    if (isItemList) this.dashboard.setCountry(nameCountry);
+    var isArrow = e.target.classList.contains('arrow');
+
+    if (isItemList) {
+      var nameCountry = e.target.parentElement.children[1].innerText;
+      this.dashboard.setCountry(nameCountry);
+    } else if (isArrow) {
+      var option = this.searchList.chooseOption(e);
+      this.dashboard.setOption(option);
+    }
   }
 
 }
