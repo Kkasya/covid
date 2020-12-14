@@ -2,6 +2,7 @@ import create from '../utils/createElement';
 import * as constants from '../data/constants';
 import SearchList from '../components/search';
 import Dashboard from '../components/dashboard';
+import Map from '../components/map';
 
 export default class Main {
     init() {
@@ -11,9 +12,11 @@ export default class Main {
         this.dashboard = new Dashboard();
         const dashboardHtml = this.dashboard.init(this.searchList);
 
+        this.map = new Map().init();
+
         searchListHtml.addEventListener('click', (e) => this.handle(e));
 
-        return create('div', 'main', [searchListHtml, dashboardHtml]);
+        return create('div', 'main', [searchListHtml, dashboardHtml, this.map]);
     }
 
     handle(e) {

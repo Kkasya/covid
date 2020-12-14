@@ -102,7 +102,7 @@ export default class Dashboard {
             };
             const dataOption = this.defineData();
             if (optionList) {
-                this.defineCountCases(optionList, dataOption, countCases);
+                Dashboard.defineCountCases(optionList, dataOption, countCases);
             } else this.changeData(endUrl, dataOption);
         });
     }
@@ -125,7 +125,7 @@ export default class Dashboard {
         }, 1200);
 }
 
-   defineCountCases(optionList, dataOption, count) {
+   static defineCountCases(optionList, dataOption, count) {
         const countCases = count;
        if (optionList === constants.cases[0]) countCases.innerText = dataOption.cases;
        if (optionList === constants.cases[1]) countCases.innerText = dataOption.deaths;

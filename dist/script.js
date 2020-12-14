@@ -161,7 +161,7 @@ class Dashboard {
       var dataOption = this.defineData();
 
       if (optionList) {
-        this.defineCountCases(optionList, dataOption, countCases);
+        Dashboard.defineCountCases(optionList, dataOption, countCases);
       } else this.changeData(endUrl, dataOption);
     });
   }
@@ -183,7 +183,7 @@ class Dashboard {
     }, 1200);
   }
 
-  defineCountCases(optionList, dataOption, count) {
+  static defineCountCases(optionList, dataOption, count) {
     var countCases = count;
     if (optionList === _data_constants__WEBPACK_IMPORTED_MODULE_2__.cases[0]) countCases.innerText = dataOption.cases;
     if (optionList === _data_constants__WEBPACK_IMPORTED_MODULE_2__.cases[1]) countCases.innerText = dataOption.deaths;
@@ -289,6 +289,39 @@ class List {
 
   static getIdCountry(name) {
     return _data_listCountries__WEBPACK_IMPORTED_MODULE_2__.default[name];
+  }
+
+}
+
+/***/ }),
+
+/***/ "./src/js/components/map.js":
+/*!**********************************!*
+  !*** ./src/js/components/map.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ Map
+/* harmony export */ });
+/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/createElement */ "./src/js/utils/createElement.js");
+/* harmony import */ var _data_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/constants */ "./src/js/data/constants.js");
+
+
+class Map {
+  init() {
+    this.container = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div');
+    this.container.id = 'map';
+    var mapOptions = {
+      center: [17.385044, 78.486671],
+      zoom: 10
+    };
+    this.map = new L.map('map', mapOptions);
+    var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    this.map.addLayer(layer);
+    console.log(this.map);
+    return this.map;
   }
 
 }
@@ -800,6 +833,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _data_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/constants */ "./src/js/data/constants.js");
 /* harmony import */ var _components_search__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/search */ "./src/js/components/search.js");
 /* harmony import */ var _components_dashboard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/dashboard */ "./src/js/components/dashboard.js");
+/* harmony import */ var _components_map__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/map */ "./src/js/components/map.js");
+
 
 
 
@@ -810,8 +845,9 @@ class Main {
     var searchListHtml = this.searchList.init();
     this.dashboard = new _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default();
     var dashboardHtml = this.dashboard.init(this.searchList);
+    this.map = new _components_map__WEBPACK_IMPORTED_MODULE_4__.default().init();
     searchListHtml.addEventListener('click', e => this.handle(e));
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [searchListHtml, dashboardHtml]);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [searchListHtml, dashboardHtml, this.map]);
   }
 
   handle(e) {
