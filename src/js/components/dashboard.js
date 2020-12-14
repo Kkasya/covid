@@ -109,6 +109,7 @@ export default class Dashboard {
 
     setDataForList(optionList) {
         const list = this.list.children;
+
         Object.values(list).forEach((value) => {
             const countryForData = value.children[1].innerText;
             const idCountry = List.getIdCountry(countryForData);
@@ -121,7 +122,7 @@ export default class Dashboard {
             const listUl = document.querySelector('.list');
             listUl.removeChild(listUl.lastChild);
             listUl.appendChild(create('ul', '', sortedList));
-        }, 1100);
+        }, 1200);
 }
 
    defineCountCases(optionList, dataOption, count) {
@@ -144,6 +145,7 @@ export default class Dashboard {
         if (isInputCheckbos) {
             const isPeriodForAll = (this.period === constants.forAll);
             this.period = isPeriodForAll ? constants.forToday : constants.forAll;
+            this.setNewList();
             this.defineOptions();
         }
     }
@@ -154,13 +156,19 @@ export default class Dashboard {
         if (isInputCheckbos) {
             const isPopulationForAll = (this.population === constants.forAll);
             this.population = isPopulationForAll ? constants.forPer : constants.forAll;
+            this.setNewList();
             this.defineOptions();
         }
     }
 
     setOption(option) {
         this.optionList = option;
+        this.setNewList();
         this.defineOptions();
+    }
+
+    setNewList() {
+        this.list = document.querySelector('ul');
     }
 
     sortData() {

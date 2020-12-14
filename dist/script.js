@@ -180,7 +180,7 @@ class Dashboard {
       var listUl = document.querySelector('.list');
       listUl.removeChild(listUl.lastChild);
       listUl.appendChild((0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('ul', '', sortedList));
-    }, 1100);
+    }, 1200);
   }
 
   defineCountCases(optionList, dataOption, count) {
@@ -205,6 +205,7 @@ class Dashboard {
     if (isInputCheckbos) {
       var isPeriodForAll = this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
       this.period = isPeriodForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forToday : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+      this.setNewList();
       this.defineOptions();
     }
   }
@@ -215,13 +216,19 @@ class Dashboard {
     if (isInputCheckbos) {
       var isPopulationForAll = this.population === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
       this.population = isPopulationForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forPer : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
+      this.setNewList();
       this.defineOptions();
     }
   }
 
   setOption(option) {
     this.optionList = option;
+    this.setNewList();
     this.defineOptions();
+  }
+
+  setNewList() {
+    this.list = document.querySelector('ul');
   }
 
   sortData() {
