@@ -2,17 +2,23 @@ import create from '../utils/createElement';
 import * as constants from '../data/constants';
 
 export default class Map {
-    init() {
+    constructor() {
         this.container = create('div');
         this.container.id = 'map';
-        const mapOptions = {
-            center: [17.385044, 78.486671],
-            zoom: 10,
+        const wrapperContainer = create('div', 'container', this.container);
+
+        window.onload = this.addMap;
+        return wrapperContainer;
+    }
+
+    addMap() {
+        this.mapOptions = {
+            center: [0, 0],
+            zoom: 2,
         };
-        this.map = new L.map('map', mapOptions);
-        const layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-        this.map.addLayer(layer);
-        console.log(this.map);
-        return this.map;
+        this.map = new L.map('map', this.mapOptions);
+        L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 20,
+        }).addTo(this.map);
     }
 }

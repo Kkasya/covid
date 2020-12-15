@@ -3,6 +3,7 @@ import Table from './table';
 import * as constants from '../data/constants';
 import Checkbox from './checkbox';
 import List from './list';
+import Map from './map';
 
 export default class Dashboard {
     constructor() {
@@ -16,8 +17,11 @@ export default class Dashboard {
         this.list = searchList.list;
         this.optionList = searchList.option;
         this.dataCases = this.createDataCases();
+        this.map = new Map();
+
+        this.setDataForList(this.optionList);
         this.defineOptions();
-        return create('div', 'dashboard', [this.dataCases]);
+        return create('div', 'dashboard', [this.dataCases, this.map]);
     }
 
     createDataCases() {
@@ -30,25 +34,23 @@ export default class Dashboard {
         this.totalRecovered = new Table('recovery', constants.cases[2]);
         const totalRecoveredHtml = this.totalRecovered.init();
 
-        this.ckbxPeriod = new Checkbox(constants.checkPeriod).init();
-        this.ckbxPeriod.addEventListener('click', (e) => this.choosePeriod(e));
+        const ckbxPeriod = new Checkbox(constants.checkPeriod).init();
+        ckbxPeriod.addEventListener('click', (e) => this.choosePeriod(e));
 
-        this.ckbxPopulation = new Checkbox(constants.checkPopulation).init();
-        this.ckbxPopulation.addEventListener('click', (e) => this.choosePopulation(e));
+        const ckbxPopulation = new Checkbox(constants.checkPopulation).init();
+        ckbxPopulation.addEventListener('click', (e) => this.choosePopulation(e));
 
-        this.checkbox = create('div', 'options', [this.ckbxPeriod, this.ckbxPopulation]);
+        const checkbox = create('div', 'options', [ckbxPeriod, ckbxPopulation]);
 
         return create('div', 'infoData',
-            [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, this.checkbox]);
+            [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, checkbox]);
     }
 
     defineOptions() {
         let endUrl;
 
-        if (this.countryForData === constants.forAll) {
-            endUrl = constants.forAll;
-            this.setDataForList(this.optionList);
-        } else {
+        if (this.countryForData === constants.forAll) endUrl = constants.forAll;
+        else {
             const idCountry = List.getIdCountry(this.countryForData);
             endUrl = `countries/${idCountry}`;
         }
@@ -66,15 +68,16 @@ export default class Dashboard {
         return dataOption;
     }
 
-    setCountry(country) {
-        this.countryForData = country;
+    setCountry(countryLi) {
+        this.countryForData = countryLi.children[1].innerText;
+        Dashboard.changeClass(countryLi, 'selected');
         this.defineOptions();
     }
 
     changeData(endUrl, dataOption) {
-            this.totalCases.setData(dataOption.cases);
-            this.totalDeath.setData(dataOption.deaths);
-            this.totalRecovered.setData(dataOption.recovered);
+        this.totalCases.setData(dataOption.cases);
+        this.totalDeath.setData(dataOption.deaths);
+        this.totalRecovered.setData(dataOption.recovered);
     }
 
     setData(endUrl, optionList, countCases) {
@@ -116,20 +119,20 @@ export default class Dashboard {
             const endUrl = `countries/${idCountry}`;
             const countCases = value.children[0];
             this.setData(endUrl, optionList, countCases);
-});
+        });
         setTimeout(() => {
             const sortedList = this.sortData();
             const listUl = document.querySelector('.list');
             listUl.removeChild(listUl.lastChild);
             listUl.appendChild(create('ul', '', sortedList));
-        }, 1200);
-}
+        }, 1500);
+    }
 
-   static defineCountCases(optionList, dataOption, count) {
+    static defineCountCases(optionList, dataOption, count) {
         const countCases = count;
-       if (optionList === constants.cases[0]) countCases.innerText = dataOption.cases;
-       if (optionList === constants.cases[1]) countCases.innerText = dataOption.deaths;
-       if (optionList === constants.cases[2]) countCases.innerText = dataOption.recovered;
+        if (optionList === constants.cases[0]) countCases.innerText = dataOption.cases;
+        if (optionList === constants.cases[1]) countCases.innerText = dataOption.deaths;
+        if (optionList === constants.cases[2]) countCases.innerText = dataOption.recovered;
     }
 
     static async getData(endUrl) {
@@ -169,17 +172,39 @@ export default class Dashboard {
 
     setNewList() {
         this.list = document.querySelector('ul');
+        this.setDataForList(this.optionList);
     }
 
     sortData() {
-       function compareLi(a, b) {
-           const countA = Number(a.children[0].innerText);
-           const countB = Number(b.children[0].innerText);
+        function compareLi(a, b) {
+            const countA = Number(a.children[0].innerText);
+            const countB = Number(b.children[0].innerText);
 
-           if (countA > countB) return -1;
-           if (countA < countB) return 1;
-           return 0;
+            if (countA > countB) return -1;
+            if (countA < countB) return 1;
+            return 0;
         }
+
         return Object.values(this.list.children).sort(compareLi);
+    }
+
+    static searchInList() {
+        const input = document.querySelector('.list__search');
+        const filter = input.value.toUpperCase();
+        const ul = document.querySelector('ul');
+        const li = ul.children;
+
+        for (let i = 0; i < li.length; i++) {
+            const nameCountry = li[i].children[1];
+            if (nameCountry.innerText.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = '';
+            } else li[i].style.display = 'none';
+        }
+    }
+
+    static changeClass(item, classNew) {
+        const selectedLi = document.querySelector(`.${classNew}`);
+        if (selectedLi && (selectedLi !== item)) selectedLi.classList.remove(classNew);
+        item.classList.add(classNew);
     }
 }

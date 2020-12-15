@@ -1,8 +1,10 @@
 .list__search {
   display: inline-block;
   min-width: $min-width-block;
+  font-size: $font-size-body;
   white-space: nowrap;
   box-shadow: 0 0 0.7rem $color-green-extra-light;
   background-color: $color-grey;
   color: $color-grey-darker;
+  border: none;
 }

@@ -60,9 +60,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _data_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/constants */ "./src/js/data/constants.js");
 /* harmony import */ var _checkbox__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./checkbox */ "./src/js/components/checkbox.js");
 /* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./list */ "./src/js/components/list.js");
+/* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./map */ "./src/js/components/map.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -81,8 +83,10 @@ class Dashboard {
     this.list = searchList.list;
     this.optionList = searchList.option;
     this.dataCases = this.createDataCases();
+    this.map = new _map__WEBPACK_IMPORTED_MODULE_5__.default();
+    this.setDataForList(this.optionList);
     this.defineOptions();
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'dashboard', [this.dataCases]);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'dashboard', [this.dataCases, this.map]);
   }
 
   createDataCases() {
@@ -92,25 +96,20 @@ class Dashboard {
     var totalDeathHtml = this.totalDeath.init();
     this.totalRecovered = new _table__WEBPACK_IMPORTED_MODULE_1__.default('recovery', _data_constants__WEBPACK_IMPORTED_MODULE_2__.cases[2]);
     var totalRecoveredHtml = this.totalRecovered.init();
-    this.ckbxPeriod = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPeriod).init();
-    this.ckbxPeriod.addEventListener('click', e => this.choosePeriod(e));
-    this.ckbxPopulation = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPopulation).init();
-    this.ckbxPopulation.addEventListener('click', e => this.choosePopulation(e));
-    this.checkbox = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'options', [this.ckbxPeriod, this.ckbxPopulation]);
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'infoData', [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, this.checkbox]);
+    var ckbxPeriod = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPeriod).init();
+    ckbxPeriod.addEventListener('click', e => this.choosePeriod(e));
+    var ckbxPopulation = new _checkbox__WEBPACK_IMPORTED_MODULE_3__.default(_data_constants__WEBPACK_IMPORTED_MODULE_2__.checkPopulation).init();
+    ckbxPopulation.addEventListener('click', e => this.choosePopulation(e));
+    var checkbox = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'options', [ckbxPeriod, ckbxPopulation]);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'infoData', [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, checkbox]);
   }
 
   defineOptions() {
     var endUrl;
-
-    if (this.countryForData === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
-      endUrl = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
-      this.setDataForList(this.optionList);
-    } else {
+    if (this.countryForData === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) endUrl = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;else {
       var idCountry = _list__WEBPACK_IMPORTED_MODULE_4__.default.getIdCountry(this.countryForData);
       endUrl = "countries/".concat(idCountry);
     }
-
     this.setData(endUrl);
   }
 
@@ -124,8 +123,9 @@ class Dashboard {
     return dataOption;
   }
 
-  setCountry(country) {
-    this.countryForData = country;
+  setCountry(countryLi) {
+    this.countryForData = countryLi.children[1].innerText;
+    Dashboard.changeClass(countryLi, 'selected');
     this.defineOptions();
   }
 
@@ -180,7 +180,7 @@ class Dashboard {
       var listUl = document.querySelector('.list');
       listUl.removeChild(listUl.lastChild);
       listUl.appendChild((0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('ul', '', sortedList));
-    }, 1200);
+    }, 1500);
   }
 
   static defineCountCases(optionList, dataOption, count) {
@@ -229,6 +229,7 @@ class Dashboard {
 
   setNewList() {
     this.list = document.querySelector('ul');
+    this.setDataForList(this.optionList);
   }
 
   sortData() {
@@ -241,6 +242,27 @@ class Dashboard {
     }
 
     return Object.values(this.list.children).sort(compareLi);
+  }
+
+  static searchInList() {
+    var input = document.querySelector('.list__search');
+    var filter = input.value.toUpperCase();
+    var ul = document.querySelector('ul');
+    var li = ul.children;
+
+    for (var i = 0; i < li.length; i++) {
+      var nameCountry = li[i].children[1];
+
+      if (nameCountry.innerText.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = '';
+      } else li[i].style.display = 'none';
+    }
+  }
+
+  static changeClass(item, classNew) {
+    var selectedLi = document.querySelector(".".concat(classNew));
+    if (selectedLi && selectedLi !== item) selectedLi.classList.remove(classNew);
+    item.classList.add(classNew);
   }
 
 }
@@ -310,18 +332,23 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Map {
-  init() {
+  constructor() {
     this.container = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div');
     this.container.id = 'map';
-    var mapOptions = {
-      center: [17.385044, 78.486671],
-      zoom: 10
+    var wrapperContainer = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'container', this.container);
+    window.onload = this.addMap;
+    return wrapperContainer;
+  }
+
+  addMap() {
+    this.mapOptions = {
+      center: [0, 0],
+      zoom: 2
     };
-    this.map = new L.map('map', mapOptions);
-    var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-    this.map.addLayer(layer);
-    console.log(this.map);
-    return this.map;
+    this.map = new L.map('map', this.mapOptions);
+    L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 20
+    }).addTo(this.map);
   }
 
 }
@@ -350,24 +377,20 @@ class SearchList {
   }
 
   init() {
-    this.titleList = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h2', '', _data_constants__WEBPACK_IMPORTED_MODULE_1__.listName);
-    this.listOption = this.createOption();
-    this.searchCountry = SearchList.createSearchCountry();
+    var titleList = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h2', '', _data_constants__WEBPACK_IMPORTED_MODULE_1__.listName);
+    var listOption = this.createOption();
+    var searchCountry = SearchList.createSearchCountry();
     this.list = new _list__WEBPACK_IMPORTED_MODULE_2__.default(this.option).init();
-    this.handle();
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'list', [this.titleList, this.listOption, this.searchCountry, this.list]);
-  }
-
-  handle() {// this.searchCountry.addEventListener('keypress', (e) => this.searchInList());
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'list', [titleList, listOption, searchCountry, this.list]);
   }
 
   createOption() {
-    this.arrowRightI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'arrow right');
-    this.arrowRight = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'list__option__arrow', this.arrowRightI);
-    this.arrowLeftI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'arrow left');
-    this.arrowLeft = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'list__option__arrow', this.arrowLeftI);
+    var arrowRightI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'arrow right');
+    var arrowRight = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'list__option__arrow', arrowRightI);
+    var arrowLeftI = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('i', 'arrow left');
+    var arrowLeft = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'list__option__arrow', arrowLeftI);
     this.optionName = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h3', '', this.option);
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'list__option', [this.arrowLeft, this.optionName, this.arrowRight]);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'list__option', [arrowLeft, this.optionName, arrowRight]);
   }
 
   chooseOption(e) {
@@ -391,7 +414,7 @@ class SearchList {
   }
 
   static createSearchCountry() {
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('span', 'list__search', null, null, ['contenteditable', 'true']);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('input', 'list__search', null, null, ['placeholder', 'Search..'], ['type', 'text']);
   }
 
   static getIndRight(index, length) {
@@ -413,11 +436,6 @@ class SearchList {
 
     return indLeft;
   }
-
-  searchInList(e) {} //      getOption() {
-  //         return this.listOption;
-  // }
-
 
 }
 
@@ -833,8 +851,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _data_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/constants */ "./src/js/data/constants.js");
 /* harmony import */ var _components_search__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/search */ "./src/js/components/search.js");
 /* harmony import */ var _components_dashboard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/dashboard */ "./src/js/components/dashboard.js");
-/* harmony import */ var _components_map__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/map */ "./src/js/components/map.js");
-
 
 
 
@@ -845,18 +861,18 @@ class Main {
     var searchListHtml = this.searchList.init();
     this.dashboard = new _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default();
     var dashboardHtml = this.dashboard.init(this.searchList);
-    this.map = new _components_map__WEBPACK_IMPORTED_MODULE_4__.default().init();
     searchListHtml.addEventListener('click', e => this.handle(e));
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [searchListHtml, dashboardHtml, this.map]);
+    searchListHtml.addEventListener('keyup', _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default.searchInList);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [searchListHtml, dashboardHtml]);
   }
 
   handle(e) {
-    var isItemList = e.target.parentElement.classList.contains('countryLi');
+    var isItemList = e.target.closest('.countryLi');
     var isArrow = e.target.classList.contains('arrow');
 
     if (isItemList) {
-      var nameCountry = e.target.parentElement.children[1].innerText;
-      this.dashboard.setCountry(nameCountry);
+      var countryLi = e.target.closest('.countryLi');
+      this.dashboard.setCountry(countryLi);
     } else if (isArrow) {
       var option = this.searchList.chooseOption(e);
       this.dashboard.setOption(option);

@@ -1,4 +1,13 @@
+.container {
+  width: 100rem;
+  height: 45rem;
+  margin-left: 1.2rem;
+  background-color: $color-grey-dark;
+  display: flex;
+}
 #map {
-  width: 90rem;
-  height: 58rem;
+  width: 98rem;
+  height: 43rem;
+  margin: auto;
+  align-content: center;
 }

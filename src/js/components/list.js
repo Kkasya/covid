@@ -7,9 +7,9 @@ export default class List {
         this.option = option;
     }
 
-        init() {
-            this.list = create('ul', '', List.createItemList());
-            return this.list;
+    init() {
+        this.list = create('ul', '', List.createItemList());
+        return this.list;
     }
 
     static createItemList() {

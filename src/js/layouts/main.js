@@ -2,7 +2,6 @@ import create from '../utils/createElement';
 import * as constants from '../data/constants';
 import SearchList from '../components/search';
 import Dashboard from '../components/dashboard';
-import Map from '../components/map';
 
 export default class Main {
     init() {
@@ -12,20 +11,19 @@ export default class Main {
         this.dashboard = new Dashboard();
         const dashboardHtml = this.dashboard.init(this.searchList);
 
-        this.map = new Map().init();
-
         searchListHtml.addEventListener('click', (e) => this.handle(e));
+        searchListHtml.addEventListener('keyup', Dashboard.searchInList);
 
-        return create('div', 'main', [searchListHtml, dashboardHtml, this.map]);
+        return create('div', 'main', [searchListHtml, dashboardHtml]);
     }
 
     handle(e) {
-        const isItemList = e.target.parentElement.classList.contains('countryLi');
+        const isItemList = e.target.closest('.countryLi');
         const isArrow = e.target.classList.contains('arrow');
 
         if (isItemList) {
-            const nameCountry = e.target.parentElement.children[1].innerText;
-            this.dashboard.setCountry(nameCountry);
+            const countryLi = e.target.closest('.countryLi');
+            this.dashboard.setCountry(countryLi);
         } else if (isArrow) {
            const option = this.searchList.chooseOption(e);
            this.dashboard.setOption(option);

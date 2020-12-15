@@ -8,26 +8,22 @@ export default class SearchList {
     }
 
     init() {
-        this.titleList = create('h2', '', constants.listName);
-        this.listOption = this.createOption();
-        this.searchCountry = SearchList.createSearchCountry();
+        const titleList = create('h2', '', constants.listName);
+        const listOption = this.createOption();
+        const searchCountry = SearchList.createSearchCountry();
         this.list = new List(this.option).init();
-        this.handle();
-        return create('div', 'list', [this.titleList, this.listOption, this.searchCountry, this.list]);
-    }
 
-    handle() {
-       // this.searchCountry.addEventListener('keypress', (e) => this.searchInList());
+        return create('div', 'list', [titleList, listOption, searchCountry, this.list]);
     }
 
     createOption() {
-        this.arrowRightI = create('i', 'arrow right');
-        this.arrowRight = create('span', 'list__option__arrow', this.arrowRightI);
-        this.arrowLeftI = create('i', 'arrow left');
-        this.arrowLeft = create('span', 'list__option__arrow', this.arrowLeftI);
+        const arrowRightI = create('i', 'arrow right');
+        const arrowRight = create('span', 'list__option__arrow', arrowRightI);
+        const arrowLeftI = create('i', 'arrow left');
+        const arrowLeft = create('span', 'list__option__arrow', arrowLeftI);
         this.optionName = create('h3', '', this.option);
 
-        return create('div', 'list__option', [this.arrowLeft, this.optionName, this.arrowRight]);
+        return create('div', 'list__option', [arrowLeft, this.optionName, arrowRight]);
     }
 
     chooseOption(e) {
@@ -48,7 +44,8 @@ export default class SearchList {
     }
 
     static createSearchCountry() {
-        return create('span', 'list__search', null, null, ['contenteditable', 'true']);
+        return create('input', 'list__search', null, null, ['placeholder', 'Search..'],
+            ['type', 'text']);
     }
 
     static getIndRight(index, length) {
@@ -66,12 +63,4 @@ export default class SearchList {
         }
         return indLeft;
     }
-
-    searchInList(e) {
-
-    }
-
-//      getOption() {
-//         return this.listOption;
-// }
 }
