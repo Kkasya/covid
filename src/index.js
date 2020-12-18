@@ -1,5 +1,9 @@
 import './sass/style.scss';
-import App from './js/layouts/app';
+import app from './js/layouts/app';
+import createArrayCountries from './js/utils/getAsyncDate';
 
-const app = new App().init();
-document.body.appendChild(app);
+createArrayCountries();
+setTimeout(() => {
+    const application = app();
+    document.body.appendChild(application);
+}, 1000);

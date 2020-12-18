@@ -23,8 +23,13 @@ const sizeFlag = '/shiny/64.png';
 
 const urlCases = 'https://disease.sh/v3/covid-19/';
 
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+const arrayDataCountries = {};
+
 export {
  srcIconHeader, srcIconGitHub, srcIconRss, hrefGitHub, hrefRss, H1, nameAuthor, year,
  cases, listName, checkPeriod, checkPopulation, urlFlag, sizeFlag, forAll, urlCases, forToday,
- forPer,
+ forPer, days, months, arrayDataCountries,
 };

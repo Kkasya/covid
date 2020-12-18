@@ -11,10 +11,15 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sass_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sass/style.scss */ "./src/sass/style.scss");
 /* harmony import */ var _js_layouts_app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/layouts/app */ "./src/js/layouts/app.js");
+/* harmony import */ var _js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/utils/getAsyncDate */ "./src/js/utils/getAsyncDate.js");
 
 
-var app = new _js_layouts_app__WEBPACK_IMPORTED_MODULE_1__.default().init();
-document.body.appendChild(app);
+
+(0,_js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__.default)();
+setTimeout(() => {
+  var application = (0,_js_layouts_app__WEBPACK_IMPORTED_MODULE_1__.default)();
+  document.body.appendChild(application);
+}, 1000);
 
 /***/ }),
 
@@ -76,7 +81,6 @@ class Dashboard {
     this.countryForData = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
     this.period = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
     this.population = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
-    this.dataAll = {};
   }
 
   init(searchList) {
@@ -108,17 +112,18 @@ class Dashboard {
     var endUrl;
     if (this.countryForData === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) endUrl = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;else {
       var idCountry = _list__WEBPACK_IMPORTED_MODULE_4__.default.getIdCountry(this.countryForData);
-      endUrl = "countries/".concat(idCountry);
+      endUrl = idCountry;
     }
     this.setData(endUrl);
   }
 
-  defineData() {
+  defineData(data) {
     var dataOption = {};
+    console.log(data);
 
     if (this.population === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
-      if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) dataOption = this.dataAll.allPeriod;else dataOption = this.dataAll.today;
-    } else if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) dataOption = this.dataAll.allPeriodPerThou;else dataOption = this.dataAll.todayPerThou;
+      if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) dataOption = data.allPeriod;else dataOption = data.today;
+    } else if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) dataOption = data.allPeriodPerThou;else dataOption = data.todayPerThou;
 
     return dataOption;
   }
@@ -136,34 +141,11 @@ class Dashboard {
   }
 
   setData(endUrl, optionList, countCases) {
-    Dashboard.getData(endUrl).then(response => {
-      var perThou = _data_constants__WEBPACK_IMPORTED_MODULE_2__.forPer / response.population;
-      this.dataAll.allPeriod = {
-        cases: response.cases,
-        deaths: response.deaths,
-        recovered: response.recovered
-      };
-      this.dataAll.today = {
-        cases: response.todayCases,
-        deaths: response.todayDeaths,
-        recovered: response.todayRecovered
-      };
-      this.dataAll.allPeriodPerThou = {
-        cases: (response.cases * perThou).toFixed(),
-        deaths: (response.deaths * perThou).toFixed(),
-        recovered: (response.recovered * perThou).toFixed()
-      };
-      this.dataAll.todayPerThou = {
-        cases: (response.todayCases * perThou).toFixed(),
-        deaths: (response.todayDeaths * perThou).toFixed(),
-        recovered: (response.todayRecovered * perThou).toFixed()
-      };
-      var dataOption = this.defineData();
+    var dataOption = this.defineData(_data_constants__WEBPACK_IMPORTED_MODULE_2__.arrayDataCountries[endUrl]);
 
-      if (optionList) {
-        Dashboard.defineCountCases(optionList, dataOption, countCases);
-      } else this.changeData(endUrl, dataOption);
-    });
+    if (optionList) {
+      Dashboard.defineCountCases(optionList, dataOption, countCases);
+    } else this.changeData(endUrl, dataOption);
   }
 
   setDataForList(optionList) {
@@ -171,16 +153,15 @@ class Dashboard {
     Object.values(list).forEach(value => {
       var countryForData = value.children[1].innerText;
       var idCountry = _list__WEBPACK_IMPORTED_MODULE_4__.default.getIdCountry(countryForData);
-      var endUrl = "countries/".concat(idCountry);
       var countCases = value.children[0];
-      this.setData(endUrl, optionList, countCases);
+      this.setData(idCountry, optionList, countCases);
     });
     setTimeout(() => {
       var sortedList = this.sortData();
       var listUl = document.querySelector('.list');
       listUl.removeChild(listUl.lastChild);
       listUl.appendChild((0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('ul', '', sortedList));
-    }, 1500);
+    }, 0);
   }
 
   static defineCountCases(optionList, dataOption, count) {
@@ -336,7 +317,7 @@ class Map {
     this.container = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div');
     this.container.id = 'map';
     var wrapperContainer = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'container', this.container);
-    window.onload = this.addMap;
+    setTimeout(this.addMap, 1000);
     return wrapperContainer;
   }
 
@@ -498,7 +479,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "forAll": () => /* binding */ forAll,
 /* harmony export */   "urlCases": () => /* binding */ urlCases,
 /* harmony export */   "forToday": () => /* binding */ forToday,
-/* harmony export */   "forPer": () => /* binding */ forPer
+/* harmony export */   "forPer": () => /* binding */ forPer,
+/* harmony export */   "days": () => /* binding */ days,
+/* harmony export */   "months": () => /* binding */ months,
+/* harmony export */   "arrayDataCountries": () => /* binding */ arrayDataCountries
 /* harmony export */ });
 var srcIconHeader = 'https://img.icons8.com/color/48/000000/coronavirus--v2.png';
 var srcIconGitHub = 'https://image.flaticon.com/icons/png/512/25/25231.png';
@@ -518,6 +502,9 @@ var forPer = 100000;
 var urlFlag = 'https://www.countryflags.io/';
 var sizeFlag = '/shiny/64.png';
 var urlCases = 'https://disease.sh/v3/covid-19/';
+var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+var arrayDataCountries = {};
 
 
 /***/ }),
@@ -570,7 +557,7 @@ var countries = {
   'Cape Verde': 'CV',
   'Cayman Islands': 'KY',
   'Central African Republic': 'CF',
-  Chad: 'td',
+  Chad: 'TD',
   Chile: 'CL',
   China: 'CN',
   Colombia: 'CO',
@@ -750,7 +737,7 @@ var countries = {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => /* binding */ App
+/* harmony export */   "default": () => /* binding */ createApp
 /* harmony export */ });
 /* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/createElement */ "./src/js/utils/createElement.js");
 /* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./header */ "./src/js/layouts/header.js");
@@ -760,14 +747,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class App {
-  init() {
-    this.header = new _header__WEBPACK_IMPORTED_MODULE_1__.default().init();
-    this.main = new _main__WEBPACK_IMPORTED_MODULE_3__.default().init();
-    this.footer = new _footer__WEBPACK_IMPORTED_MODULE_2__.default().init();
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', '', [this.header, this.main, this.footer]);
-  }
-
+function createApp() {
+  var header = new _header__WEBPACK_IMPORTED_MODULE_1__.default().init();
+  var main = new _main__WEBPACK_IMPORTED_MODULE_3__.default().init();
+  var footer = new _footer__WEBPACK_IMPORTED_MODULE_2__.default().init();
+  return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', '', [header, main, footer]);
 }
 
 /***/ }),
@@ -827,10 +811,22 @@ __webpack_require__.r(__webpack_exports__);
 
 class Header {
   init() {
-    this.imgTitle = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('img', '', null, null, ['src', _data_constants__WEBPACK_IMPORTED_MODULE_1__.srcIconHeader]);
-    this.H1 = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h1', '', _data_constants__WEBPACK_IMPORTED_MODULE_1__.H1);
-    this.titleHeader = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'title', [this.imgTitle, this.H1]);
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'header', this.titleHeader);
+    var imgTitle = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('img', '', null, null, ['src', _data_constants__WEBPACK_IMPORTED_MODULE_1__.srcIconHeader]);
+    var H1 = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h1', '', _data_constants__WEBPACK_IMPORTED_MODULE_1__.H1);
+    this.day = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('h2', 'day', this.showDay());
+    this.showDay();
+    var titleHeader = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'title', [imgTitle, H1]);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'header', [titleHeader, this.day]);
+  }
+
+  showDay() {
+    var today = new Date();
+    var numberOfDay = today.getDay();
+    var numberOfMonth = today.getMonth();
+    var date = today.getDate();
+    var day = _data_constants__WEBPACK_IMPORTED_MODULE_1__.days[numberOfDay];
+    var month = _data_constants__WEBPACK_IMPORTED_MODULE_1__.months[numberOfMonth];
+    return "".concat(day, ", ").concat(date, " ").concat(month);
   }
 
 }
@@ -932,6 +928,86 @@ function create(elem, classes, childs, parent) {
   }
 
   return element;
+}
+
+/***/ }),
+
+/***/ "./src/js/utils/getAsyncDate.js":
+/*!**************************************!*
+  !*** ./src/js/utils/getAsyncDate.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ createArrayCountries
+/* harmony export */ });
+/* harmony import */ var _data_constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/constants */ "./src/js/data/constants.js");
+/* harmony import */ var _data_listCountries__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/listCountries */ "./src/js/data/listCountries.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+function getData(_x) {
+  return _getData.apply(this, arguments);
+}
+
+function _getData() {
+  _getData = _asyncToGenerator(function* (endUrl) {
+    var url = "".concat(_data_constants__WEBPACK_IMPORTED_MODULE_0__.urlCases).concat(endUrl);
+    var res = yield fetch(url);
+    var data = yield res.json();
+    return data;
+  });
+  return _getData.apply(this, arguments);
+}
+
+function setData(endUrl) {
+  getData(endUrl).then(response => {
+    var perThou = _data_constants__WEBPACK_IMPORTED_MODULE_0__.forPer / response.population;
+    var id = endUrl === _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll ? _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll : response.countryInfo.iso2;
+    _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataCountries[id] = {
+      allPeriod: {
+        cases: response.cases,
+        deaths: response.deaths,
+        recovered: response.recovered
+      },
+      today: {
+        cases: response.todayCases,
+        deaths: response.todayDeaths,
+        recovered: response.todayRecovered
+      },
+      allPeriodPerThou: {
+        cases: (response.cases * perThou).toFixed(2),
+        deaths: (response.deaths * perThou).toFixed(2),
+        recovered: (response.recovered * perThou).toFixed(2)
+      },
+      todayPerThou: {
+        cases: (response.todayCases * perThou).toFixed(2),
+        deaths: (response.todayDeaths * perThou).toFixed(2),
+        recovered: (response.todayRecovered * perThou).toFixed(2)
+      }
+    };
+
+    if (endUrl !== _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll) {
+      _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataCountries[id].countryInfo = {
+        flag: response.countryInfo.flag,
+        lat: response.countryInfo.lat.toFixed(6),
+        long: response.countryInfo.long.toFixed(6)
+      };
+    }
+  });
+}
+
+function createArrayCountries() {
+  Object.values(_data_listCountries__WEBPACK_IMPORTED_MODULE_1__.default).forEach(value => {
+    var endUrl = "countries/".concat(value);
+    setData(endUrl);
+  });
+  setData(_data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll);
 }
 
 /***/ }),

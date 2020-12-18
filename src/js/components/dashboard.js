@@ -10,7 +10,6 @@ export default class Dashboard {
         this.countryForData = constants.forAll;
         this.period = constants.forAll;
         this.population = constants.forAll;
-        this.dataAll = {};
     }
 
     init(searchList) {
@@ -52,18 +51,19 @@ export default class Dashboard {
         if (this.countryForData === constants.forAll) endUrl = constants.forAll;
         else {
             const idCountry = List.getIdCountry(this.countryForData);
-            endUrl = `countries/${idCountry}`;
+            endUrl = idCountry;
         }
         this.setData(endUrl);
     }
 
-    defineData() {
+    defineData(data) {
         let dataOption = {};
+        console.log(data);
         if (this.population === constants.forAll) {
-            if (this.period === constants.forAll) dataOption = this.dataAll.allPeriod;
-            else dataOption = this.dataAll.today;
-        } else if (this.period === constants.forAll) dataOption = this.dataAll.allPeriodPerThou;
-        else dataOption = this.dataAll.todayPerThou;
+            if (this.period === constants.forAll) dataOption = data.allPeriod;
+            else dataOption = data.today;
+        } else if (this.period === constants.forAll) dataOption = data.allPeriodPerThou;
+        else dataOption = data.todayPerThou;
 
         return dataOption;
     }
@@ -81,33 +81,10 @@ export default class Dashboard {
     }
 
     setData(endUrl, optionList, countCases) {
-        Dashboard.getData(endUrl).then((response) => {
-            const perThou = constants.forPer / response.population;
-            this.dataAll.allPeriod = {
-                cases: response.cases,
-                deaths: response.deaths,
-                recovered: response.recovered,
-            };
-            this.dataAll.today = {
-                cases: response.todayCases,
-                deaths: response.todayDeaths,
-                recovered: response.todayRecovered,
-            };
-            this.dataAll.allPeriodPerThou = {
-                cases: (response.cases * perThou).toFixed(),
-                deaths: (response.deaths * perThou).toFixed(),
-                recovered: (response.recovered * perThou).toFixed(),
-            };
-            this.dataAll.todayPerThou = {
-                cases: (response.todayCases * perThou).toFixed(),
-                deaths: (response.todayDeaths * perThou).toFixed(),
-                recovered: (response.todayRecovered * perThou).toFixed(),
-            };
-            const dataOption = this.defineData();
+            const dataOption = this.defineData(constants.arrayDataCountries[endUrl]);
             if (optionList) {
                 Dashboard.defineCountCases(optionList, dataOption, countCases);
             } else this.changeData(endUrl, dataOption);
-        });
     }
 
     setDataForList(optionList) {
@@ -116,16 +93,15 @@ export default class Dashboard {
         Object.values(list).forEach((value) => {
             const countryForData = value.children[1].innerText;
             const idCountry = List.getIdCountry(countryForData);
-            const endUrl = `countries/${idCountry}`;
             const countCases = value.children[0];
-            this.setData(endUrl, optionList, countCases);
+            this.setData(idCountry, optionList, countCases);
         });
         setTimeout(() => {
             const sortedList = this.sortData();
             const listUl = document.querySelector('.list');
             listUl.removeChild(listUl.lastChild);
             listUl.appendChild(create('ul', '', sortedList));
-        }, 1500);
+        }, 0);
     }
 
     static defineCountCases(optionList, dataOption, count) {

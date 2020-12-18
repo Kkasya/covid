@@ -36,7 +36,7 @@ const countries = {
     'Cape Verde': 'CV',
     'Cayman Islands': 'KY',
     'Central African Republic': 'CF',
-    Chad: 'td',
+    Chad: 'TD',
     Chile: 'CL',
     China: 'CN',
     Colombia: 'CO',

@@ -7,7 +7,7 @@ export default class Map {
         this.container.id = 'map';
         const wrapperContainer = create('div', 'container', this.container);
 
-        window.onload = this.addMap;
+        setTimeout(this.addMap, 1000);
         return wrapperContainer;
     }
 

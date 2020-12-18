@@ -7,20 +7,14 @@
 
 .title {
   display: flex;
+
   img {
     width: 6rem;
     height: 6rem;
   }
 }
 
-.countries {
-  font-family: $font-family-body;
-  padding: 1.5rem 5rem;
-  font-size: $font-size-body;
-  &::before {
-    content: "Select country";
-  }
-  select {
-    font-size: $font-size-body;
-  }
+.day {
+  padding-right: 5rem;
+  color: $color-green-extra-light;
 }
