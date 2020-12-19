@@ -1,6 +1,8 @@
 const srcIconHeader = 'https://img.icons8.com/color/48/000000/coronavirus--v2.png';
 const srcIconGitHub = 'https://image.flaticon.com/icons/png/512/25/25231.png';
 const srcIconRss = 'https://rs.school/images/rs_school_js.svg';
+const srcIconMarker = 'https://www.flaticon.com/svg/static/icons/svg/594/594739.svg';
+const srcTypeMap = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}';
 
 const hrefGitHub = 'https://github.com/Kkasya';
 const hrefRss = 'https://rs.school/js/';
@@ -27,9 +29,19 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const arrayDataCountries = {};
+const range = {
+ low: 0,
+ middle: 0.1,
+ height: 0.4,
+};
+const rangeSize = {
+ low: 8,
+ middle: 15,
+ height: 20,
+};
 
 export {
  srcIconHeader, srcIconGitHub, srcIconRss, hrefGitHub, hrefRss, H1, nameAuthor, year,
  cases, listName, checkPeriod, checkPopulation, urlFlag, sizeFlag, forAll, urlCases, forToday,
- forPer, days, months, arrayDataCountries,
+ forPer, days, months, arrayDataCountries, srcIconMarker, range, rangeSize, srcTypeMap,
 };

@@ -10,6 +10,7 @@ async function getData(endUrl) {
 
 function setData(endUrl) {
     getData(endUrl).then((response) => {
+      //  console.log(response);
         const perThou = constants.forPer / response.population;
         const id = (endUrl === constants.forAll) ? constants.forAll : response.countryInfo.iso2;
         constants.arrayDataCountries[id] = {
@@ -36,6 +37,7 @@ function setData(endUrl) {
         };
         if (endUrl !== constants.forAll) {
             constants.arrayDataCountries[id].countryInfo = {
+                country: response.country,
                 flag: response.countryInfo.flag,
                     lat: response.countryInfo.lat.toFixed(6),
                     long: response.countryInfo.long.toFixed(6),

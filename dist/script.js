@@ -19,7 +19,7 @@ __webpack_require__.r(__webpack_exports__);
 setTimeout(() => {
   var application = (0,_js_layouts_app__WEBPACK_IMPORTED_MODULE_1__.default)();
   document.body.appendChild(application);
-}, 1000);
+}, 1500);
 
 /***/ }),
 
@@ -87,10 +87,11 @@ class Dashboard {
     this.list = searchList.list;
     this.optionList = searchList.option;
     this.dataCases = this.createDataCases();
-    this.map = new _map__WEBPACK_IMPORTED_MODULE_5__.default();
+    this.mapCovid = new _map__WEBPACK_IMPORTED_MODULE_5__.default();
+    var mapHtml = this.mapCovid.init();
     this.setDataForList(this.optionList);
     this.defineOptions();
-    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'dashboard', [this.dataCases, this.map]);
+    return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'dashboard', [this.dataCases, mapHtml]);
   }
 
   createDataCases() {
@@ -118,8 +119,8 @@ class Dashboard {
   }
 
   defineData(data) {
+    //  console.log(data);
     var dataOption = {};
-    console.log(data);
 
     if (this.population === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
       if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) dataOption = data.allPeriod;else dataOption = data.today;
@@ -188,6 +189,7 @@ class Dashboard {
       this.period = isPeriodForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forToday : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
       this.setNewList();
       this.defineOptions();
+      setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
     }
   }
 
@@ -199,6 +201,7 @@ class Dashboard {
       this.population = isPopulationForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forPer : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
       this.setNewList();
       this.defineOptions();
+      setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
     }
   }
 
@@ -313,23 +316,83 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Map {
-  constructor() {
+  init() {
     this.container = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div');
     this.container.id = 'map';
     var wrapperContainer = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'container', this.container);
-    setTimeout(this.addMap, 1000);
+    this.period = _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll;
+    this.population = _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll;
+    setTimeout(() => this.createLayer(), 1000);
+    setTimeout(() => {
+      this.addMarkers();
+    }, 1500);
     return wrapperContainer;
   }
 
-  addMap() {
-    this.mapOptions = {
+  addMarkers() {
+    this.markers = [];
+    Object.keys(_data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries).forEach(key => {
+      if (key !== _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll) {
+        var lat = Number(_data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key].countryInfo.lat);
+        var long = Number(_data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key].countryInfo.long);
+        var nameCountry = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key].countryInfo.country;
+        var markerOptions = {
+          icon: this.createIcon(key),
+          title: "".concat(nameCountry, "\nCases: ").concat(this.cases.toLocaleString())
+        };
+        var marker = new L.Marker([lat, long], markerOptions);
+        this.markers.push(marker);
+        marker.bindPopup("".concat(nameCountry, "\n                        <br> Cases: ").concat(this.cases.toLocaleString())).openPopup();
+        marker.addTo(this.map);
+      }
+    });
+  }
+
+  createLayer() {
+    var mapOptions = {
       center: [0, 0],
       zoom: 2
     };
-    this.map = new L.map('map', this.mapOptions);
-    L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 20
+    this.map = new L.map('map', mapOptions);
+    L.tileLayer(_data_constants__WEBPACK_IMPORTED_MODULE_1__.srcTypeMap, {
+      maxZoom: 20,
+      noWrap: true,
+      minZoom: 2
     }).addTo(this.map);
+  }
+
+  createIcon(key) {
+    var data = this.defineData();
+    this.cases = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key][data].cases;
+    var maxCases = Number(document.querySelector('ul').children[0].children[0].innerText);
+    var relativeValue = this.cases / maxCases;
+    var sizeIcon;
+    Object.entries(_data_constants__WEBPACK_IMPORTED_MODULE_1__.range).forEach((_ref) => {
+      var [keyRange, value] = _ref;
+      if (relativeValue > value) sizeIcon = "".concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize[keyRange]);
+    });
+    var iconOptions = {
+      iconUrl: _data_constants__WEBPACK_IMPORTED_MODULE_1__.srcIconMarker,
+      iconSize: [sizeIcon, sizeIcon]
+    };
+    return L.icon(iconOptions);
+  }
+
+  changeMarker(period, population) {
+    this.period = period;
+    this.population = population;
+    this.markers.forEach(marker => this.map.removeLayer(marker));
+    this.addMarkers();
+  }
+
+  defineData() {
+    var data;
+
+    if (this.population === _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll) {
+      if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll) data = 'allPeriod';else data = 'today';
+    } else if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll) data = 'allPeriodPerThou';else data = 'todayPerThou';
+
+    return data;
   }
 
 }
@@ -482,11 +545,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "forPer": () => /* binding */ forPer,
 /* harmony export */   "days": () => /* binding */ days,
 /* harmony export */   "months": () => /* binding */ months,
-/* harmony export */   "arrayDataCountries": () => /* binding */ arrayDataCountries
+/* harmony export */   "arrayDataCountries": () => /* binding */ arrayDataCountries,
+/* harmony export */   "srcIconMarker": () => /* binding */ srcIconMarker,
+/* harmony export */   "range": () => /* binding */ range,
+/* harmony export */   "rangeSize": () => /* binding */ rangeSize,
+/* harmony export */   "srcTypeMap": () => /* binding */ srcTypeMap
 /* harmony export */ });
 var srcIconHeader = 'https://img.icons8.com/color/48/000000/coronavirus--v2.png';
 var srcIconGitHub = 'https://image.flaticon.com/icons/png/512/25/25231.png';
 var srcIconRss = 'https://rs.school/images/rs_school_js.svg';
+var srcIconMarker = 'https://www.flaticon.com/svg/static/icons/svg/594/594739.svg';
+var srcTypeMap = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}';
 var hrefGitHub = 'https://github.com/Kkasya';
 var hrefRss = 'https://rs.school/js/';
 var H1 = 'COVID-19 Dashboard';
@@ -505,6 +574,16 @@ var urlCases = 'https://disease.sh/v3/covid-19/';
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 var arrayDataCountries = {};
+var range = {
+  low: 0,
+  middle: 0.1,
+  height: 0.4
+};
+var rangeSize = {
+  low: 8,
+  middle: 15,
+  height: 20
+};
 
 
 /***/ }),
@@ -967,6 +1046,7 @@ function _getData() {
 
 function setData(endUrl) {
   getData(endUrl).then(response => {
+    //  console.log(response);
     var perThou = _data_constants__WEBPACK_IMPORTED_MODULE_0__.forPer / response.population;
     var id = endUrl === _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll ? _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll : response.countryInfo.iso2;
     _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataCountries[id] = {
@@ -994,6 +1074,7 @@ function setData(endUrl) {
 
     if (endUrl !== _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll) {
       _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataCountries[id].countryInfo = {
+        country: response.country,
         flag: response.countryInfo.flag,
         lat: response.countryInfo.lat.toFixed(6),
         long: response.countryInfo.long.toFixed(6)

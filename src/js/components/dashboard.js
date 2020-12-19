@@ -16,11 +16,12 @@ export default class Dashboard {
         this.list = searchList.list;
         this.optionList = searchList.option;
         this.dataCases = this.createDataCases();
-        this.map = new Map();
+        this.mapCovid = new Map();
+        const mapHtml = this.mapCovid.init();
 
         this.setDataForList(this.optionList);
         this.defineOptions();
-        return create('div', 'dashboard', [this.dataCases, this.map]);
+        return create('div', 'dashboard', [this.dataCases, mapHtml]);
     }
 
     createDataCases() {
@@ -57,8 +58,8 @@ export default class Dashboard {
     }
 
     defineData(data) {
+      //  console.log(data);
         let dataOption = {};
-        console.log(data);
         if (this.population === constants.forAll) {
             if (this.period === constants.forAll) dataOption = data.allPeriod;
             else dataOption = data.today;
@@ -126,6 +127,7 @@ export default class Dashboard {
             this.period = isPeriodForAll ? constants.forToday : constants.forAll;
             this.setNewList();
             this.defineOptions();
+            setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
         }
     }
 
@@ -137,6 +139,7 @@ export default class Dashboard {
             this.population = isPopulationForAll ? constants.forPer : constants.forAll;
             this.setNewList();
             this.defineOptions();
+            setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
         }
     }
 
