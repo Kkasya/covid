@@ -1,11 +1,11 @@
 
 .list {
-  padding: 1rem;
+  padding: 0.3rem;
   margin: 1rem;
   background-color: $color-grey-dark;
   text-align: center;
   min-width: $min-width-list;
-  max-height: 80rem;
+  max-height: $max-height-list;
   overflow-y: scroll;
 
   &__option {
@@ -36,7 +36,7 @@
     li {
       display: flex;
       list-style-type: none;
-      padding: 1rem 0.3rem;
+      padding: 1rem 0.2rem;
       font-size: $font-size-list;
 
       &:hover {
@@ -49,7 +49,7 @@
       }
 
       span {
-        padding-right: 1rem;
+        padding-right: 0.7rem;
         margin: auto 0;
       }
       .count {
@@ -57,7 +57,7 @@
         color: $color-pink-dark;
       }
       .countryFlag {
-        width: 3rem;
+        width: $width-flag;
       }
     }
   }

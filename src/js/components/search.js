@@ -63,4 +63,9 @@ export default class SearchList {
         }
         return indLeft;
     }
+
+    setOption(option) {
+        this.option = option;
+        this.optionName.innerText = option;
+    }
 }

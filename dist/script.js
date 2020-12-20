@@ -19,7 +19,7 @@ __webpack_require__.r(__webpack_exports__);
 setTimeout(() => {
   var application = (0,_js_layouts_app__WEBPACK_IMPORTED_MODULE_1__.default)();
   document.body.appendChild(application);
-}, 1500);
+}, 2000);
 
 /***/ }),
 
@@ -119,7 +119,6 @@ class Dashboard {
   }
 
   defineData(data) {
-    //  console.log(data);
     var dataOption = {};
 
     if (this.population === _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll) {
@@ -207,6 +206,7 @@ class Dashboard {
 
   setOption(option) {
     this.optionList = option;
+    this.mapCovid.changeDataMap(option);
     this.setNewList();
     this.defineOptions();
   }
@@ -316,16 +316,23 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Map {
+  constructor() {
+    this.typeCases = 'cases';
+    this.period = _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll;
+    this.population = _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll;
+  }
+
   init() {
     this.container = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div');
     this.container.id = 'map';
-    var wrapperContainer = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'container', this.container);
-    this.period = _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll;
-    this.population = _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll;
+    this.btnCases = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'btn-cases total-cases active-btn', 'Total cases');
+    this.btnDeath = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'btn-cases total-deaths', 'Total deaths');
+    this.btnRecovery = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'btn-cases total-recovered', 'Total recovered');
+    this.btnTotal = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'btn-wrapper', [this.btnCases, this.btnDeath, this.btnRecovery]);
+    this.activeBtn = this.btnCases;
+    var wrapperContainer = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'container', [this.container, this.btnTotal]);
     setTimeout(() => this.createLayer(), 1000);
-    setTimeout(() => {
-      this.addMarkers();
-    }, 1500);
+    setTimeout(() => this.addMarkers(), 1500);
     return wrapperContainer;
   }
 
@@ -338,11 +345,11 @@ class Map {
         var nameCountry = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key].countryInfo.country;
         var markerOptions = {
           icon: this.createIcon(key),
-          title: "".concat(nameCountry, "\nCases: ").concat(this.cases.toLocaleString())
+          title: "".concat(nameCountry, "\nTotal ").concat(this.typeCases, ": ").concat(this.cases.toLocaleString())
         };
         var marker = new L.Marker([lat, long], markerOptions);
         this.markers.push(marker);
-        marker.bindPopup("".concat(nameCountry, "\n                        <br> Cases: ").concat(this.cases.toLocaleString())).openPopup();
+        marker.bindPopup("".concat(nameCountry, "\n                        <br> Total ").concat(this.typeCases, ": ").concat(this.cases.toLocaleString())).openPopup();
         marker.addTo(this.map);
       }
     });
@@ -359,11 +366,27 @@ class Map {
       noWrap: true,
       minZoom: 2
     }).addTo(this.map);
+    this.createLegend();
+  }
+
+  createLegend() {
+    var legend = L.control({
+      position: 'bottomright'
+    });
+
+    legend.onAdd = function () {
+      var div = L.DomUtil.create('div', 'legend');
+      var grades = 'Relative values:';
+      div.innerHTML += "".concat(grades, "<br> \n                    <img src=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.srcIconMarker, " height=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.low, " width=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.low, ">\n                     ").concat(100 * _data_constants__WEBPACK_IMPORTED_MODULE_1__.range.low, " - ").concat(100 * _data_constants__WEBPACK_IMPORTED_MODULE_1__.range.middle - 1, " <br>\n<img src=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.srcIconMarker, " height=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.middle, " width=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.middle, ">\n ").concat(100 * _data_constants__WEBPACK_IMPORTED_MODULE_1__.range.middle, " - ").concat(100 * _data_constants__WEBPACK_IMPORTED_MODULE_1__.range.middleHeight - 1, " <br>\n<img src=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.srcIconMarker, " height=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.middleHeight, " width=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.middleHeight, "> \n    ").concat(100 * _data_constants__WEBPACK_IMPORTED_MODULE_1__.range.middleHeight, " - ").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.range.height * 100, " <br>\n<img src=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.srcIconMarker, " height=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.height, " width=").concat(_data_constants__WEBPACK_IMPORTED_MODULE_1__.rangeSize.height, "> \n").concat(100 * _data_constants__WEBPACK_IMPORTED_MODULE_1__.range.height, " - 100");
+      return div;
+    };
+
+    legend.addTo(this.map);
   }
 
   createIcon(key) {
     var data = this.defineData();
-    this.cases = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key][data].cases;
+    this.cases = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key][data][this.typeCases];
     var maxCases = Number(document.querySelector('ul').children[0].children[0].innerText);
     var relativeValue = this.cases / maxCases;
     var sizeIcon;
@@ -378,11 +401,13 @@ class Map {
     return L.icon(iconOptions);
   }
 
-  changeMarker(period, population) {
+  changeMarker() {
+    var period = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.period;
+    var population = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.population;
     this.period = period;
     this.population = population;
     this.markers.forEach(marker => this.map.removeLayer(marker));
-    this.addMarkers();
+    setTimeout(() => this.addMarkers(), 0);
   }
 
   defineData() {
@@ -393,6 +418,24 @@ class Map {
     } else if (this.period === _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll) data = 'allPeriodPerThou';else data = 'todayPerThou';
 
     return data;
+  }
+
+  changeDataMap(option) {
+    console.log(option);
+
+    if (option !== this.activeBtn.innerText) {
+      // const a = document.querySelector('.active-btn');
+      this.activeBtn.classList.remove('active-btn');
+      var newActiveBtn = document.querySelector(".total-".concat(option.split(' ')[1]));
+      this.activeBtn = newActiveBtn;
+      this.activeBtn.classList.add('active-btn');
+      this.setTypeCases(option.split(' ')[1]);
+    }
+  }
+
+  setTypeCases(typeCases) {
+    this.typeCases = typeCases;
+    this.changeMarker();
   }
 
 }
@@ -479,6 +522,11 @@ class SearchList {
     }
 
     return indLeft;
+  }
+
+  setOption(option) {
+    this.option = option;
+    this.optionName.innerText = option;
   }
 
 }
@@ -576,12 +624,14 @@ var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'S
 var arrayDataCountries = {};
 var range = {
   low: 0,
-  middle: 0.1,
+  middle: 0.08,
+  middleHeight: 0.2,
   height: 0.4
 };
 var rangeSize = {
   low: 8,
-  middle: 15,
+  middle: 10,
+  middleHeight: 15,
   height: 20
 };
 
@@ -830,7 +880,7 @@ function createApp() {
   var header = new _header__WEBPACK_IMPORTED_MODULE_1__.default().init();
   var main = new _main__WEBPACK_IMPORTED_MODULE_3__.default().init();
   var footer = new _footer__WEBPACK_IMPORTED_MODULE_2__.default().init();
-  return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', '', [header, main, footer]);
+  return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'wrapper', [header, main, footer]);
 }
 
 /***/ }),
@@ -938,12 +988,14 @@ class Main {
     var dashboardHtml = this.dashboard.init(this.searchList);
     searchListHtml.addEventListener('click', e => this.handle(e));
     searchListHtml.addEventListener('keyup', _components_dashboard__WEBPACK_IMPORTED_MODULE_3__.default.searchInList);
+    dashboardHtml.addEventListener('click', e => this.handle(e));
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'main', [searchListHtml, dashboardHtml]);
   }
 
   handle(e) {
     var isItemList = e.target.closest('.countryLi');
     var isArrow = e.target.classList.contains('arrow');
+    var isBtnMap = e.target.classList.contains('btn-cases');
 
     if (isItemList) {
       var countryLi = e.target.closest('.countryLi');
@@ -951,6 +1003,10 @@ class Main {
     } else if (isArrow) {
       var option = this.searchList.chooseOption(e);
       this.dashboard.setOption(option);
+    } else if (isBtnMap) {
+      var _option = e.target.innerText;
+      this.searchList.setOption(_option);
+      this.dashboard.setOption(_option);
     }
   }
 

@@ -3,6 +3,7 @@
   padding: 0.1rem;
   border-radius: 0.4rem;
   display: block;
+  font-size: $font-size-list;
 
   input {
     position: absolute;
@@ -26,7 +27,7 @@
 .period {
   padding-bottom: 1rem;
   label {
-    min-width: 27rem;
+    min-width: 21rem;
     cursor: pointer;
     display: block;
     &:before {
@@ -62,7 +63,7 @@
 
 .population {
   label {
-    min-width: 27rem;
+    min-width: 21rem;
     cursor: pointer;
     display: block;
     &:before {
@@ -94,3 +95,23 @@
     }
   }
 }
+
+
+.btn-wrapper {
+  display: flex;
+  margin-left: 1rem;
+
+  .btn-cases {
+    box-shadow: inset 0 0 1rem black;
+    padding: 0.5rem;
+    z-index: 2;
+    background-color: $color-grey-dark;
+    cursor: pointer;
+
+  }
+  .active-btn {
+    cursor: default;
+    box-shadow: inset 0 0 0.2rem black;
+  }
+}
+

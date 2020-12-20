@@ -58,7 +58,6 @@ export default class Dashboard {
     }
 
     defineData(data) {
-      //  console.log(data);
         let dataOption = {};
         if (this.population === constants.forAll) {
             if (this.period === constants.forAll) dataOption = data.allPeriod;
@@ -145,6 +144,7 @@ export default class Dashboard {
 
     setOption(option) {
         this.optionList = option;
+        this.mapCovid.changeDataMap(option);
         this.setNewList();
         this.defineOptions();
     }

@@ -6,4 +6,4 @@ createArrayCountries();
 setTimeout(() => {
     const application = app();
     document.body.appendChild(application);
-}, 1500);
+}, 2000);

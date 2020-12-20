@@ -1,5 +1,29 @@
-@mixin media-table {
-  @media ($tablet-width) {
+@mixin media-tablet {
+  @media (max-width: $tablet-width) {
+    @content;
+  }
+}
+
+@mixin media-tablet1 {
+  @media (max-width: $tablet-width1) {
+    @content;
+  }
+}
+
+@mixin media-tablet2 {
+  @media (max-width: $tablet-width2) {
+    @content;
+  }
+}
+
+@mixin media-mobile {
+  @media (max-width: $mobile-width) {
+    @content;
+  }
+}
+
+@mixin media-mobile1 {
+  @media (max-width: $mobile-width1) {
     @content;
   }
 }

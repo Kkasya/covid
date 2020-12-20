@@ -7,5 +7,5 @@ export default function createApp() {
     const header = new Header().init();
     const main = new Main().init();
     const footer = new Footer().init();
-    return create('div', '', [header, main, footer]);
+    return create('div', 'wrapper', [header, main, footer]);
 }

@@ -13,6 +13,7 @@ export default class Main {
 
         searchListHtml.addEventListener('click', (e) => this.handle(e));
         searchListHtml.addEventListener('keyup', Dashboard.searchInList);
+        dashboardHtml.addEventListener('click', (e) => this.handle(e));
 
         return create('div', 'main', [searchListHtml, dashboardHtml]);
     }
@@ -20,6 +21,7 @@ export default class Main {
     handle(e) {
         const isItemList = e.target.closest('.countryLi');
         const isArrow = e.target.classList.contains('arrow');
+        const isBtnMap = e.target.classList.contains('btn-cases');
 
         if (isItemList) {
             const countryLi = e.target.closest('.countryLi');
@@ -27,6 +29,10 @@ export default class Main {
         } else if (isArrow) {
            const option = this.searchList.chooseOption(e);
            this.dashboard.setOption(option);
+        } else if (isBtnMap) {
+            const option = e.target.innerText;
+            this.searchList.setOption(option);
+            this.dashboard.setOption(option);
         }
     }
 }

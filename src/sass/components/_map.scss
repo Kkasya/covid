@@ -1,15 +1,23 @@
 .container {
-  width: 100rem;
+  width: 75rem;
   height: 45rem;
   margin-left: 1.2rem;
   background-color: $color-grey-dark;
   display: flex;
+  flex-direction: column;
 }
 #map {
-  width: 98rem;
+  width: 73rem;
   height: 43rem;
-  margin: auto;
+  margin: auto auto -2rem auto;
   align-content: center;
   background-color: $color-grey-dark;
   color: black;
+}
+
+.legend {
+  background-color: $color-grey;
+  font-color: $color-main-light;
+  padding: 0.5rem;
+  box-shadow: inset 0 0 0.6rem black;
 }

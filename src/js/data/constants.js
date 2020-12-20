@@ -31,12 +31,14 @@ const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 const arrayDataCountries = {};
 const range = {
  low: 0,
- middle: 0.1,
+ middle: 0.08,
+ middleHeight: 0.2,
  height: 0.4,
 };
 const rangeSize = {
  low: 8,
- middle: 15,
+ middle: 10,
+ middleHeight: 15,
  height: 20,
 };
 
