@@ -1,5 +1,6 @@
 import create from '../utils/createElement';
 import * as constants from '../data/constants';
+import * as geo from '../data/geojson';
 
 export default class Map {
     constructor() {
@@ -9,16 +10,17 @@ export default class Map {
     }
 
     init() {
-        this.container = create('div');
-        this.container.id = 'map';
+        const container = create('div');
+        container.id = 'map';
 
-        this.btnCases = create('div', 'btn-cases total-cases active-btn', 'Total cases');
-        this.btnDeath = create('div', 'btn-cases total-deaths', 'Total deaths');
-        this.btnRecovery = create('div', 'btn-cases total-recovered', 'Total recovered');
-        this.btnTotal = create('div', 'btn-wrapper', [this.btnCases, this.btnDeath, this.btnRecovery]);
-        this.activeBtn = this.btnCases;
+        const btnCases = create('div', 'btn-cases total-cases active-btn', 'Total cases');
+        const btnDeath = create('div', 'btn-cases total-deaths', 'Total deaths');
+        const btnRecovery = create('div', 'btn-cases total-recovered', 'Total recovered');
+        const btnTotal = create('div', 'btn-wrapper', [btnCases, btnDeath, btnRecovery]);
+        this.activeBtn = btnCases;
 
-        const wrapperContainer = create('div', 'container', [this.container, this.btnTotal]);
+        const btnFullScreen = create('div', 'full-screen');
+        const wrapperContainer = create('div', 'container', [container, btnTotal, btnFullScreen]);
 
         setTimeout(() => this.createLayer(), 1000);
         setTimeout(() => this.addMarkers(), 1500);
@@ -55,11 +57,13 @@ export default class Map {
         };
         this.map = new L.map('map', mapOptions);
         L.tileLayer(constants.srcTypeMap, {
-            maxZoom: 20,
+            maxZoom: 5,
             noWrap: true,
-            minZoom: 2,
+            minZoom: 1,
         }).addTo(this.map);
         this.createLegend();
+
+            L.geoJson(geo.geojsonFeature, { color: 'orange', width: '0.5px' }).addTo(this.map);
     }
 
     createLegend() {
@@ -67,7 +71,7 @@ export default class Map {
 
         legend.onAdd = function () {
             const div = L.DomUtil.create('div', 'legend');
-            const grades = 'Relative values:';
+            const grades = 'Cases / maxCases %:';
 
             div.innerHTML
                 += `${grades}<br> 
@@ -122,9 +126,7 @@ ${100 * constants.range.height} - 100`;
     }
 
     changeDataMap(option) {
-        console.log(option);
         if (option !== this.activeBtn.innerText) {
-            // const a = document.querySelector('.active-btn');
             this.activeBtn.classList.remove('active-btn');
             const newActiveBtn = document.querySelector(`.total-${option.split(' ')[1]}`);
             this.activeBtn = newActiveBtn;

@@ -15,7 +15,10 @@ export default class Main {
         searchListHtml.addEventListener('keyup', Dashboard.searchInList);
         dashboardHtml.addEventListener('click', (e) => this.handle(e));
 
-        return create('div', 'main', [searchListHtml, dashboardHtml]);
+        this.main = create('div', 'main', [searchListHtml, dashboardHtml]);
+        this.main.addEventListener('click', (e) => this.openFullScreen(e, dashboardHtml, searchListHtml));
+
+        return this.main;
     }
 
     handle(e) {
@@ -33,6 +36,30 @@ export default class Main {
             const option = e.target.innerText;
             this.searchList.setOption(option);
             this.dashboard.setOption(option);
+        }
+    }
+
+    openFullScreen(e, dashboardHtml, searchListHtml) {
+        const listBlocks = [].concat(Object.values(dashboardHtml.children));
+        listBlocks.push(searchListHtml);
+        const isBtnFullScreen = e.target.classList.contains('full-screen');
+        const isBtnEndFullScreen = e.target.classList.contains('end-full-screen');
+        if (isBtnFullScreen) {
+            e.target.classList.add('end-full-screen');
+            e.target.classList.remove('full-screen');
+            const elem = e.target.parentNode;
+            elem.classList.add('full');
+            listBlocks.forEach((el) => {
+                if (el !== elem) el.classList.add('hidden');
+            });
+        } else if (isBtnEndFullScreen) {
+            e.target.classList.remove('end-full-screen');
+            e.target.classList.add('full-screen');
+            const elem = e.target.parentNode;
+            elem.classList.remove('full');
+            listBlocks.forEach((el) => {
+                if (el !== elem) el.classList.remove('hidden');
+            });
         }
     }
 }

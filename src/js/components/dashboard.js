@@ -41,9 +41,10 @@ export default class Dashboard {
         ckbxPopulation.addEventListener('click', (e) => this.choosePopulation(e));
 
         const checkbox = create('div', 'options', [ckbxPeriod, ckbxPopulation]);
+        const btnFullScreen = create('div', 'full-screen');
 
         return create('div', 'infoData',
-            [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, checkbox]);
+            [totalCasesHtml, totalDeathHtml, totalRecoveredHtml, checkbox, btnFullScreen]);
     }
 
     defineOptions() {

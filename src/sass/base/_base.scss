@@ -34,6 +34,10 @@ body {
   .wrapper {
     display: flex;
     flex-direction: column;
+
+    .hidden{
+      display: none;
+    }
   }
   *::-webkit-scrollbar {
     width: 1rem;
@@ -67,4 +71,10 @@ h3 {
 
 .active_li {
   box-shadow: 0 0 0.7rem $color-green-extra-light;
+}
+
+.full {
+  display: block;
+  width: 95vw;
+  height: 100vh;
 }

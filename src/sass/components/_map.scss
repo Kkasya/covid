@@ -1,13 +1,15 @@
 .container {
-  width: 75rem;
+  width: 76rem;
   height: 45rem;
   margin-left: 1.2rem;
   background-color: $color-grey-dark;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
+
 #map {
-  width: 73rem;
+  width: 74rem;
   height: 43rem;
   margin: auto auto -2rem auto;
   align-content: center;

@@ -42,6 +42,9 @@ body .wrapper {
   display: flex;
   flex-direction: column;
 }
+body .wrapper .hidden {
+  display: none;
+}
 body *::-webkit-scrollbar {
   width: 1rem;
 }
@@ -72,6 +75,12 @@ h3 {
 
 .active_li {
   box-shadow: 0 0 0.7rem #22b576;
+}
+
+.full {
+  display: block;
+  width: 95vw;
+  height: 100vh;
 }
 
 .checkbox {
@@ -178,9 +187,35 @@ h3 {
   box-shadow: inset 0 0 0.2rem black;
 }
 
+.full-screen {
+  background: url("https://image.flaticon.com/icons/png/512/67/67760.png");
+  background-color: #888;
+  background-size: contain;
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.end-full-screen {
+  background: url("https://image.flaticon.com/icons/png/512/18/18231.png");
+  background-color: #888;
+  background-size: contain;
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
 .list__search {
   display: inline-block;
-  min-width: 15rem;
+  min-width: 16rem;
   font-size: 1.6rem;
   white-space: nowrap;
   box-shadow: 0 0 0.7rem #22b576;
@@ -197,6 +232,7 @@ h3 {
   min-width: 24rem;
   max-height: 70rem;
   overflow-y: scroll;
+  position: relative;
 }
 .list__option {
   display: flex;
@@ -254,16 +290,17 @@ h3 {
 }
 
 .container {
-  width: 75rem;
+  width: 76rem;
   height: 45rem;
   margin-left: 1.2rem;
   background-color: #333;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 #map {
-  width: 73rem;
+  width: 74rem;
   height: 43rem;
   margin: auto auto -2rem auto;
   align-content: center;
@@ -300,6 +337,7 @@ h3 {
 
 .main {
   display: flex;
+  position: relative;
   justify-content: center;
   padding: 1rem 0.5rem;
   margin: 0.1rem auto;
@@ -309,6 +347,7 @@ h3 {
 
 .dashboard .infoData {
   display: flex;
+  position: relative;
 }
 
 .cases, .death, .recovery, .map, .graph {
@@ -319,7 +358,7 @@ h3 {
 }
 
 .cases, .death, .recovery {
-  min-width: 15rem;
+  min-width: 16rem;
 }
 
 .options {

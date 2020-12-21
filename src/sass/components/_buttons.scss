@@ -115,3 +115,27 @@
   }
 }
 
+.full-screen {
+  background: url("https://image.flaticon.com/icons/png/512/67/67760.png");
+  background-color: $color-grey;;
+  background-size: contain;
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+.end-full-screen {
+  background: url("https://image.flaticon.com/icons/png/512/18/18231.png");
+  background-color: $color-grey;;
+  background-size: contain;
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  z-index: 2;
+}

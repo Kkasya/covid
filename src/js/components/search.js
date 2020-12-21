@@ -12,8 +12,9 @@ export default class SearchList {
         const listOption = this.createOption();
         const searchCountry = SearchList.createSearchCountry();
         this.list = new List(this.option).init();
+        const btnFullScreen = create('div', 'full-screen');
 
-        return create('div', 'list', [titleList, listOption, searchCountry, this.list]);
+        return create('div', 'list', [btnFullScreen, titleList, listOption, searchCountry, this.list]);
     }
 
     createOption() {
