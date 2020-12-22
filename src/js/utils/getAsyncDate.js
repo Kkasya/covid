@@ -10,7 +10,6 @@ async function getData(endUrl) {
 
 function setData(endUrl) {
     getData(endUrl).then((response) => {
-      //  console.log(response);
         const perThou = constants.forPer / response.population;
         const id = (endUrl === constants.forAll) ? constants.forAll : response.countryInfo.iso2;
         constants.arrayDataCountries[id] = {
@@ -34,6 +33,7 @@ function setData(endUrl) {
                 deaths: (response.todayDeaths * perThou).toFixed(2),
                 recovered: (response.todayRecovered * perThou).toFixed(2),
             },
+            population: response.population,
         };
         if (endUrl !== constants.forAll) {
             constants.arrayDataCountries[id].countryInfo = {
@@ -46,10 +46,43 @@ function setData(endUrl) {
     });
 }
 
-export default function createArrayCountries() {
+export function createArrayCountries() {
     Object.values(countries).forEach((value) => {
         const endUrl = `countries/${value}`;
         setData(endUrl);
     });
     setData(constants.forAll);
+}
+
+function setDataHistorical(forData) {
+    const endUrl = `historical/${forData}?lastdays=all`;
+    getData(endUrl).then((response) => {
+       // console.log(response);
+       // const perThou = constants.forPer / response.population;
+       // const id = (forData === constants.forAll) ? constants.forAll : response.country;
+if (forData === constants.forAll) {
+    constants.arrayDataGraph[forData] = {
+        allPeriod: {
+            cases: response.cases,
+            deaths: response.deaths,
+            recovered: response.recovered,
+        },
+
+    };
+} else {
+    constants.arrayDataGraph[forData] = {
+        allPeriod: {
+            cases: response.timeline.cases,
+            deaths: response.timeline.deaths,
+            recovered: response.timeline.recovered,
+        },
+
+    };
+}
+    });
+}
+
+export function createArrayHistorical() {
+    Object.values(countries).forEach((value) => setDataHistorical(value));
+    setDataHistorical(constants.forAll);
 }

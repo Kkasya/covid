@@ -31,6 +31,8 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const arrayDataCountries = {};
+const arrayDataGraph = {};
+
 const range = {
  low: 0,
  middle: 0.08,
@@ -47,5 +49,6 @@ const rangeSize = {
 export {
  srcIconHeader, srcIconGitHub, srcIconRss, hrefGitHub, hrefRss, H1, nameAuthor, year,
  cases, listName, checkPeriod, checkPopulation, urlFlag, sizeFlag, forAll, urlCases, forToday,
- forPer, days, months, arrayDataCountries, srcIconMarker, range, rangeSize, srcTypeMap, fullScreen, endFullScreen,
+ forPer, days, months, arrayDataCountries, srcIconMarker, range, rangeSize, srcTypeMap, fullScreen,
+ endFullScreen, arrayDataGraph,
 };

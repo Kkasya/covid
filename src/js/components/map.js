@@ -59,7 +59,7 @@ export default class Map {
         L.tileLayer(constants.srcTypeMap, {
             maxZoom: 5,
             noWrap: true,
-            minZoom: 1,
+            minZoom: 2,
         }).addTo(this.map);
         this.createLegend();
 
@@ -128,9 +128,11 @@ ${100 * constants.range.height} - 100`;
     changeDataMap(option) {
         if (option !== this.activeBtn.innerText) {
             this.activeBtn.classList.remove('active-btn');
-            const newActiveBtn = document.querySelector(`.total-${option.split(' ')[1]}`);
-            this.activeBtn = newActiveBtn;
-            this.activeBtn.classList.add('active-btn');
+            const newActiveBtns = document.querySelectorAll(`.total-${option.split(' ')[1]}`);
+            newActiveBtns.forEach((newActiveBtn) => {
+                this.activeBtn = newActiveBtn;
+                this.activeBtn.classList.add('active-btn');
+            });
             this.setTypeCases(option.split(' ')[1]);
         }
     }

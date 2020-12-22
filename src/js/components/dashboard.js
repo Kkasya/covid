@@ -4,6 +4,7 @@ import * as constants from '../data/constants';
 import Checkbox from './checkbox';
 import List from './list';
 import Map from './map';
+import Graph from './graph';
 
 export default class Dashboard {
     constructor() {
@@ -18,10 +19,12 @@ export default class Dashboard {
         this.dataCases = this.createDataCases();
         this.mapCovid = new Map();
         const mapHtml = this.mapCovid.init();
+        this.graph = new Graph();
+        const graphHtml = this.graph.init();
 
         this.setDataForList(this.optionList);
         this.defineOptions();
-        return create('div', 'dashboard', [this.dataCases, mapHtml]);
+        return create('div', 'dashboard', [this.dataCases, mapHtml, graphHtml]);
     }
 
     createDataCases() {
@@ -73,6 +76,7 @@ export default class Dashboard {
         this.countryForData = countryLi.children[1].innerText;
         Dashboard.changeClass(countryLi, 'selected');
         this.defineOptions();
+        this.graph.setLineCountry(this.countryForData);
     }
 
     changeData(endUrl, dataOption) {
@@ -146,6 +150,7 @@ export default class Dashboard {
     setOption(option) {
         this.optionList = option;
         this.mapCovid.changeDataMap(option);
+        this.graph.changeDataGraph(option);
         this.setNewList();
         this.defineOptions();
     }
