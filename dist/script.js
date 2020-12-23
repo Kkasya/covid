@@ -18,12 +18,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 _js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__.createArrayCountries();
-_js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__.createArrayHistorical(); // console.log(constants.arrayDataGraph);
-
+setTimeout(() => {
+  _js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__.createArrayHistorical();
+  console.log(_js_data_constants__WEBPACK_IMPORTED_MODULE_3__.arrayDataGraph);
+}, 1000);
 setTimeout(() => {
   var application = (0,_js_layouts_app__WEBPACK_IMPORTED_MODULE_1__.default)();
   document.body.appendChild(application);
-}, 2000);
+}, 2100);
 
 /***/ }),
 
@@ -198,7 +200,10 @@ class Dashboard {
       this.period = isPeriodForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forToday : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
       this.setNewList();
       this.defineOptions();
-      setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
+      setTimeout(() => {
+        this.mapCovid.changeMarker(this.period, this.population);
+        this.graph.changeLine(this.period, this.population);
+      }, 0);
     }
   }
 
@@ -210,7 +215,10 @@ class Dashboard {
       this.population = isPopulationForAll ? _data_constants__WEBPACK_IMPORTED_MODULE_2__.forPer : _data_constants__WEBPACK_IMPORTED_MODULE_2__.forAll;
       this.setNewList();
       this.defineOptions();
-      setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
+      setTimeout(() => {
+        this.mapCovid.changeMarker(this.period, this.population);
+        this.graph.changeLine(this.period, this.population);
+      }, 0);
     }
   }
 
@@ -276,6 +284,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/createElement */ "./src/js/utils/createElement.js");
 /* harmony import */ var _data_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/constants */ "./src/js/data/constants.js");
+/* harmony import */ var _data_listCountries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/listCountries */ "./src/js/data/listCountries.js");
+
 
 
 class Graph {
@@ -295,7 +305,7 @@ class Graph {
     this.activeBtn = btnCases;
     this.graph = (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('canvas', null, null, null, ['height', '14rem'], ['width', '74rem']);
     this.graph.id = 'chart';
-    this.addLine();
+    setTimeout(() => this.addLine(), 1200);
     return (0,_utils_createElement__WEBPACK_IMPORTED_MODULE_0__.default)('div', 'graph', [this.graph, btnTotal, btnFullScreen]);
   }
 
@@ -328,28 +338,23 @@ class Graph {
   }
 
   setData() {
-    var data = 'allPeriod';
+    var data = this.defineData();
     var arrayCases = [];
     var labels = [];
-    console.log(_data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataGraph);
+    var idCountry = this.country === _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll ? _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll : _data_listCountries__WEBPACK_IMPORTED_MODULE_2__.default[this.country];
     Object.keys(_data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataGraph).forEach(key => {
-      if (key === this.country) {
+      if (key === idCountry) {
         var cases = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataGraph[key][data][this.typeCases];
         arrayCases.push(Object.values(cases));
-
-        if (this.population !== _data_constants__WEBPACK_IMPORTED_MODULE_1__.forAll) {
-          var {
-            population
-          } = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataCountries[key];
-          labels.push(Object.keys(cases) * (1000 / population));
-        } else labels.push(Object.keys(cases));
+        labels.push(Object.keys(cases));
       }
-    });
+    }); // console.log(labels);
+
     var newLine = {
       label: "Total ".concat(this.typeCases, " for ").concat(this.country),
       data: arrayCases[0],
-      backgroundColor: 'rgba(39, 35, 56, 0.5)',
-      borderColor: 'rgba(39, 35, 56, 0.5)',
+      backgroundColor: 'rgba(39, 35, 56)',
+      borderColor: 'rgba(39, 35, 56)',
       borderWidth: 2,
       fill: false
     };
@@ -384,19 +389,24 @@ class Graph {
   }
 
   changeLine() {
-    this.dataChart.datasets.pop();
+    var period = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.period;
+    var population = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.population;
+    this.period = period;
+    this.population = population;
+    this.dataChart.datasets.pop(); // this.dataChart.labels.length = 0;
+
     this.lineChart.update();
     var {
       newLine,
       labels
     } = this.setData();
-    this.dataChart.datasets.push(newLine);
+    this.dataChart.datasets.push(newLine); // this.dataChart.labels = labels[0];
+
     this.lineChart.update();
   }
 
   setLineCountry(countryForData) {
     this.country = countryForData;
-    console.log(countryForData);
     var dataCountry = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataGraph[this.country];
     console.log(dataCountry);
     this.changeLine();
@@ -3162,18 +3172,32 @@ function createArrayCountries() {
   setData(_data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll);
 }
 
+function calcCases(dataCases, perThou) {
+  return Object.entries(dataCases).map((_ref) => {
+    var [key, value] = _ref;
+    return (value * perThou).toFixed(2);
+  });
+}
+
 function setDataHistorical(forData) {
   var endUrl = "historical/".concat(forData, "?lastdays=all");
+  var {
+    population
+  } = _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataCountries[forData];
   getData(endUrl).then(response => {
-    // console.log(response);
-    // const perThou = constants.forPer / response.population;
-    // const id = (forData === constants.forAll) ? constants.forAll : response.country;
+    var perThou = _data_constants__WEBPACK_IMPORTED_MODULE_0__.forPer / population;
+
     if (forData === _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll) {
       _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataGraph[forData] = {
         allPeriod: {
           cases: response.cases,
           deaths: response.deaths,
           recovered: response.recovered
+        },
+        allPeriodPerThou: {
+          cases: calcCases(response.cases, perThou),
+          deaths: calcCases(response.deaths, perThou),
+          recovered: calcCases(response.recovered, perThou)
         }
       };
     } else {
@@ -3182,6 +3206,11 @@ function setDataHistorical(forData) {
           cases: response.timeline.cases,
           deaths: response.timeline.deaths,
           recovered: response.timeline.recovered
+        },
+        allPeriodPerThou: {
+          cases: calcCases(response.timeline.cases, perThou),
+          deaths: calcCases(response.timeline.deaths, perThou),
+          recovered: calcCases(response.timeline.recovered, perThou)
         }
       };
     }

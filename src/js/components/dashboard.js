@@ -131,7 +131,10 @@ export default class Dashboard {
             this.period = isPeriodForAll ? constants.forToday : constants.forAll;
             this.setNewList();
             this.defineOptions();
-            setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
+            setTimeout(() => {
+                this.mapCovid.changeMarker(this.period, this.population);
+                this.graph.changeLine(this.period, this.population);
+            }, 0);
         }
     }
 
@@ -143,7 +146,10 @@ export default class Dashboard {
             this.population = isPopulationForAll ? constants.forPer : constants.forAll;
             this.setNewList();
             this.defineOptions();
-            setTimeout(() => this.mapCovid.changeMarker(this.period, this.population), 0);
+            setTimeout(() => {
+                this.mapCovid.changeMarker(this.period, this.population);
+                this.graph.changeLine(this.period, this.population);
+            }, 0);
         }
     }
 

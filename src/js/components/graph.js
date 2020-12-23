@@ -1,5 +1,6 @@
 import create from '../utils/createElement';
 import * as constants from '../data/constants';
+import countries from '../data/listCountries';
 
 export default class Graph {
     constructor() {
@@ -19,7 +20,7 @@ export default class Graph {
 
         this.graph = create('canvas', null, null, null, ['height', '14rem'], ['width', '74rem']);
         this.graph.id = 'chart';
-        this.addLine();
+        setTimeout(() => this.addLine(), 1200);
 
         return create('div', 'graph', [this.graph, btnTotal, btnFullScreen]);
     }
@@ -54,25 +55,24 @@ export default class Graph {
     }
 
     setData() {
-        const data = 'allPeriod';
+        const data = this.defineData();
         const arrayCases = [];
         const labels = [];
-        console.log(constants.arrayDataGraph);
+        const idCountry = (this.country === constants.forAll) ? constants.forAll : countries[this.country];
         Object.keys(constants.arrayDataGraph).forEach((key) => {
-            if (key === this.country) {
+            if (key === idCountry) {
                 const cases = constants.arrayDataGraph[key][data][this.typeCases];
                 arrayCases.push(Object.values(cases));
-                if (this.population !== constants.forAll) {
-                    const { population } = constants.arrayDataCountries[key];
-                    labels.push(Object.keys(cases) * (1000 / population));
-                } else labels.push(Object.keys(cases));
+                labels.push(Object.keys(cases));
             }
         });
+        // console.log(labels);
+
         const newLine = {
             label: `Total ${this.typeCases} for ${this.country}`,
             data: arrayCases[0],
-            backgroundColor: 'rgba(39, 35, 56, 0.5)',
-            borderColor: 'rgba(39, 35, 56, 0.5)',
+            backgroundColor: 'rgba(39, 35, 56)',
+            borderColor: 'rgba(39, 35, 56)',
             borderWidth: 2,
             fill: false,
         };
@@ -103,17 +103,21 @@ export default class Graph {
         this.changeLine();
     }
 
-    changeLine() {
+    changeLine(period = this.period, population = this.population) {
+        this.period = period;
+        this.population = population;
+
         this.dataChart.datasets.pop();
+        // this.dataChart.labels.length = 0;
         this.lineChart.update();
         const { newLine, labels } = this.setData();
         this.dataChart.datasets.push(newLine);
+        // this.dataChart.labels = labels[0];
         this.lineChart.update();
     }
 
     setLineCountry(countryForData) {
         this.country = countryForData;
-        console.log(countryForData);
         const dataCountry = constants.arrayDataGraph[this.country];
         console.log(dataCountry);
         this.changeLine();

@@ -54,18 +54,28 @@ export function createArrayCountries() {
     setData(constants.forAll);
 }
 
+function calcCases(dataCases, perThou) {
+    return Object.entries(dataCases).map(([key, value]) => (value * perThou).toFixed(2));
+}
+
 function setDataHistorical(forData) {
     const endUrl = `historical/${forData}?lastdays=all`;
+    const { population } = constants.arrayDataCountries[forData];
+
     getData(endUrl).then((response) => {
-       // console.log(response);
-       // const perThou = constants.forPer / response.population;
-       // const id = (forData === constants.forAll) ? constants.forAll : response.country;
+        const perThou = constants.forPer / population;
 if (forData === constants.forAll) {
     constants.arrayDataGraph[forData] = {
+
         allPeriod: {
             cases: response.cases,
             deaths: response.deaths,
             recovered: response.recovered,
+        },
+        allPeriodPerThou: {
+            cases: calcCases(response.cases, perThou),
+            deaths: calcCases(response.deaths, perThou),
+            recovered: calcCases(response.recovered, perThou),
         },
 
     };
@@ -75,6 +85,11 @@ if (forData === constants.forAll) {
             cases: response.timeline.cases,
             deaths: response.timeline.deaths,
             recovered: response.timeline.recovered,
+        },
+        allPeriodPerThou: {
+            cases: calcCases(response.timeline.cases, perThou),
+            deaths: calcCases(response.timeline.deaths, perThou),
+            recovered: calcCases(response.timeline.recovered, perThou),
         },
 
     };
