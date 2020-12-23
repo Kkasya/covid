@@ -11,7 +11,8 @@
 #map {
   width: 74rem;
   height: 40rem;
-  margin: auto auto -2rem auto;
+  margin: auto;
+  padding-bottom: -2rem;
   align-content: center;
   background-color: $color-grey-dark;
   color: black;

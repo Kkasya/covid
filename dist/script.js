@@ -12,20 +12,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sass_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sass/style.scss */ "./src/sass/style.scss");
 /* harmony import */ var _js_layouts_app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/layouts/app */ "./src/js/layouts/app.js");
 /* harmony import */ var _js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/utils/getAsyncDate */ "./src/js/utils/getAsyncDate.js");
-/* harmony import */ var _js_data_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/data/constants */ "./src/js/data/constants.js");
-
 
 
 
 _js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__.createArrayCountries();
-setTimeout(() => {
-  _js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__.createArrayHistorical();
-  console.log(_js_data_constants__WEBPACK_IMPORTED_MODULE_3__.arrayDataGraph);
-}, 1000);
+setTimeout(() => _js_utils_getAsyncDate__WEBPACK_IMPORTED_MODULE_2__.createArrayHistorical(), 2000);
 setTimeout(() => {
   var application = (0,_js_layouts_app__WEBPACK_IMPORTED_MODULE_1__.default)();
   document.body.appendChild(application);
-}, 2100);
+}, 3000);
 
 /***/ }),
 
@@ -348,8 +343,7 @@ class Graph {
         arrayCases.push(Object.values(cases));
         labels.push(Object.keys(cases));
       }
-    }); // console.log(labels);
-
+    });
     var newLine = {
       label: "Total ".concat(this.typeCases, " for ").concat(this.country),
       data: arrayCases[0],
@@ -393,22 +387,17 @@ class Graph {
     var population = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.population;
     this.period = period;
     this.population = population;
-    this.dataChart.datasets.pop(); // this.dataChart.labels.length = 0;
-
+    this.dataChart.datasets.pop();
     this.lineChart.update();
     var {
-      newLine,
-      labels
+      newLine
     } = this.setData();
-    this.dataChart.datasets.push(newLine); // this.dataChart.labels = labels[0];
-
+    this.dataChart.datasets.push(newLine);
     this.lineChart.update();
   }
 
   setLineCountry(countryForData) {
     this.country = countryForData;
-    var dataCountry = _data_constants__WEBPACK_IMPORTED_MODULE_1__.arrayDataGraph[this.country];
-    console.log(dataCountry);
     this.changeLine();
   }
 
@@ -3179,6 +3168,25 @@ function calcCases(dataCases, perThou) {
   });
 }
 
+function calcToday(dataCases) {
+  var dataToday = [];
+  var prevVal;
+  Object.values(dataCases).forEach(value => {
+    if (dataToday.length === 0) {
+      dataToday.push(value);
+      prevVal = value;
+    } else {
+      dataToday.push(value - prevVal);
+      prevVal = value;
+    }
+  });
+  return dataToday;
+}
+
+function calcTodayPerThou(dataCases, perThou) {
+  return dataCases.map(value => (value * perThou).toFixed(2));
+}
+
 function setDataHistorical(forData) {
   var endUrl = "historical/".concat(forData, "?lastdays=all");
   var {
@@ -3188,6 +3196,9 @@ function setDataHistorical(forData) {
     var perThou = _data_constants__WEBPACK_IMPORTED_MODULE_0__.forPer / population;
 
     if (forData === _data_constants__WEBPACK_IMPORTED_MODULE_0__.forAll) {
+      var casesToday = calcToday(response.cases);
+      var deathToday = calcToday(response.deaths);
+      var recoveredToday = calcToday(response.recovered);
       _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataGraph[forData] = {
         allPeriod: {
           cases: response.cases,
@@ -3198,9 +3209,25 @@ function setDataHistorical(forData) {
           cases: calcCases(response.cases, perThou),
           deaths: calcCases(response.deaths, perThou),
           recovered: calcCases(response.recovered, perThou)
+        },
+        today: {
+          cases: casesToday,
+          deaths: deathToday,
+          recovered: recoveredToday
+        },
+        todayPerThou: {
+          cases: calcTodayPerThou(casesToday, perThou),
+          deaths: calcTodayPerThou(deathToday, perThou),
+          recovered: calcTodayPerThou(recoveredToday, perThou)
         }
       };
     } else {
+      var _casesToday = calcToday(response.timeline.cases);
+
+      var _deathToday = calcToday(response.timeline.deaths);
+
+      var _recoveredToday = calcToday(response.timeline.recovered);
+
       _data_constants__WEBPACK_IMPORTED_MODULE_0__.arrayDataGraph[forData] = {
         allPeriod: {
           cases: response.timeline.cases,
@@ -3211,6 +3238,16 @@ function setDataHistorical(forData) {
           cases: calcCases(response.timeline.cases, perThou),
           deaths: calcCases(response.timeline.deaths, perThou),
           recovered: calcCases(response.timeline.recovered, perThou)
+        },
+        today: {
+          cases: _casesToday,
+          deaths: _deathToday,
+          recovered: _recoveredToday
+        },
+        todayPerThou: {
+          cases: calcTodayPerThou(_casesToday, perThou),
+          deaths: calcTodayPerThou(_deathToday, perThou),
+          recovered: calcTodayPerThou(_recoveredToday, perThou)
         }
       };
     }

@@ -63,7 +63,7 @@ export default class Map {
         }).addTo(this.map);
         this.createLegend();
 
-            L.geoJson(geo.geojsonFeature, { color: 'orange', width: '0.5px' }).addTo(this.map);
+        L.geoJson(geo.geojsonFeature, { color: 'orange', width: '0.5px' }).addTo(this.map);
     }
 
     createLegend() {

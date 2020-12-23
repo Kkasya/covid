@@ -34,21 +34,21 @@ const arrayDataCountries = {};
 const arrayDataGraph = {};
 
 const range = {
- low: 0,
- middle: 0.08,
- middleHeight: 0.2,
- height: 0.4,
+    low: 0,
+    middle: 0.08,
+    middleHeight: 0.2,
+    height: 0.4,
 };
 const rangeSize = {
- low: 8,
- middle: 10,
- middleHeight: 15,
- height: 20,
+    low: 8,
+    middle: 10,
+    middleHeight: 15,
+    height: 20,
 };
 
 export {
- srcIconHeader, srcIconGitHub, srcIconRss, hrefGitHub, hrefRss, H1, nameAuthor, year,
- cases, listName, checkPeriod, checkPopulation, urlFlag, sizeFlag, forAll, urlCases, forToday,
- forPer, days, months, arrayDataCountries, srcIconMarker, range, rangeSize, srcTypeMap, fullScreen,
- endFullScreen, arrayDataGraph,
+    srcIconHeader, srcIconGitHub, srcIconRss, hrefGitHub, hrefRss, H1, nameAuthor, year,
+    cases, listName, checkPeriod, checkPopulation, urlFlag, sizeFlag, forAll, urlCases, forToday,
+    forPer, days, months, arrayDataCountries, srcIconMarker, range, rangeSize, srcTypeMap, fullScreen,
+    endFullScreen, arrayDataGraph,
 };

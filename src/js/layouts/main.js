@@ -30,8 +30,8 @@ export default class Main {
             const countryLi = e.target.closest('.countryLi');
             this.dashboard.setCountry(countryLi);
         } else if (isArrow) {
-           const option = this.searchList.chooseOption(e);
-           this.dashboard.setOption(option);
+            const option = this.searchList.chooseOption(e);
+            this.dashboard.setOption(option);
         } else if (isBtnMap) {
             const option = e.target.innerText;
             this.searchList.setOption(option);

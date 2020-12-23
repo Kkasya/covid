@@ -41,7 +41,7 @@ export default class SearchList {
         }
         this.optionName.innerText = this.option;
 
-       return this.option;
+        return this.option;
     }
 
     static createSearchCountry() {

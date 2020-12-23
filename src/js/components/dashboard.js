@@ -86,10 +86,10 @@ export default class Dashboard {
     }
 
     setData(endUrl, optionList, countCases) {
-            const dataOption = this.defineData(constants.arrayDataCountries[endUrl]);
-            if (optionList) {
-                Dashboard.defineCountCases(optionList, dataOption, countCases);
-            } else this.changeData(endUrl, dataOption);
+        const dataOption = this.defineData(constants.arrayDataCountries[endUrl]);
+        if (optionList) {
+            Dashboard.defineCountCases(optionList, dataOption, countCases);
+        } else this.changeData(endUrl, dataOption);
     }
 
     setDataForList(optionList) {

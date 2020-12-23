@@ -1,5 +1,5 @@
 /* eslint-disable */
-const geojsonFeature  = {
+const geojsonFeature = {
     "type": "FeatureCollection", "features": [
         {
             "type": "Feature", "id": "AFG", "properties": {"name": "Afghanistan"}, "geometry": {

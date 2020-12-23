@@ -16,20 +16,24 @@
     .left {
       transform: rotate(135deg);
     }
+
     .right {
       transform: rotate(-45deg);
     }
+
     i {
       border: solid $color-main-dark;
       border-width: 0 0.4rem 0.4rem 0;
       display: inline-block;
       padding: 0.4rem;
       cursor: pointer;
+
       &:hover {
         border-color: $color-main-light;
       }
     }
   }
+
   ul {
     color: $color-main;
     font-family: $font-family-body;
@@ -44,6 +48,7 @@
         cursor: pointer;
         box-shadow: inset 0 0 0.4rem $color-green-extra-light;
       }
+
       &:active {
         box-shadow: inset 0 0 0.7rem $color-green-extra-light;
         background-color: $color-selected-item;
@@ -53,10 +58,12 @@
         padding-right: 0.7rem;
         margin: auto 0;
       }
+
       .count {
         font-size: $font-size-count;
         color: $color-pink-dark;
       }
+
       .countryFlag {
         width: $width-flag;
       }

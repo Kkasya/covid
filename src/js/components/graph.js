@@ -66,7 +66,6 @@ export default class Graph {
                 labels.push(Object.keys(cases));
             }
         });
-        // console.log(labels);
 
         const newLine = {
             label: `Total ${this.typeCases} for ${this.country}`,
@@ -108,18 +107,14 @@ export default class Graph {
         this.population = population;
 
         this.dataChart.datasets.pop();
-        // this.dataChart.labels.length = 0;
         this.lineChart.update();
-        const { newLine, labels } = this.setData();
+        const { newLine } = this.setData();
         this.dataChart.datasets.push(newLine);
-        // this.dataChart.labels = labels[0];
         this.lineChart.update();
     }
 
     setLineCountry(countryForData) {
         this.country = countryForData;
-        const dataCountry = constants.arrayDataGraph[this.country];
-        console.log(dataCountry);
         this.changeLine();
     }
 }
