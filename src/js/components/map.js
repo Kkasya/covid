@@ -1,3 +1,5 @@
+import L from 'leaflet';
+
 import create from '../utils/createElement';
 import * as constants from '../data/constants';
 import * as geo from '../data/geojson';
