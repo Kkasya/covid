@@ -1,6 +1,6 @@
 # Task 8. Covid dashboard для [RS School](https://rs.school)
 ![covid](https://raw.githubusercontent.com/kkasya/covid/master/src/assets/images/covid.jpg)
-[Приложение Covid dashboard](https://kkasya-covid.netlify.app)
+[Приложение Covid dashboard](http://htmlpreview.github.io/?https://github.com/Kkasya/shelter/tree/master/pages/main.main.html)
 ### Приложение для отслеживания распространения COVID-19 в мире и в отдельных странах. Информацию необходимо представить в виде таблицы, списка, графика и интерактивной карты.
 ---
 ### Структура и особенности работы приложения
